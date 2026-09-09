@@ -8,14 +8,29 @@
 import Foundation
 
 public enum ApiNetwork {
-    static let baseUrl: String = "https://api.themoviedb.org/3"
+    static func makeRequest(from apiRequest: ApiRequest) throws -> URLRequest {
+        guard let url = makeURL(endpoint: apiRequest.url) else {
+            throw ApiError.malformedURL
+        }
 
-    static func makeURL(
+        var request = URLRequest(url: url)
+        request.httpMethod = apiRequest.method.value
+        request.httpBody = apiRequest.body
+        request.setValue(apiRequest.contentType, forHTTPHeaderField: "Content-Type")
+
+        apiRequest.headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+
+        return request
+    }
+
+    static func makeEndpoint(
         path: String,
         apiKey: String,
         queryItems: [URLQueryItem] = []
-    ) -> URL? {
-        makeURL(
+    ) -> Endpoint {
+        Endpoint(
             path: path,
             queryItems: [
                 URLQueryItem(name: "api_key", value: apiKey)
@@ -36,11 +51,16 @@ public enum ApiNetwork {
 
 private extension ApiNetwork {
     static func makeURL(
-        path: String,
-        queryItems: [URLQueryItem]
+        endpoint: Endpoint
     ) -> URL? {
-        var components = URLComponents(string: baseUrl + path)
-        components?.queryItems = queryItems
+        guard let baseURL = ApiURL.base else {
+            return nil
+        }
+
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+        let path = endpoint.path.hasPrefix("/") ? endpoint.path : "/\(endpoint.path)"
+        components?.path += path
+        components?.queryItems = endpoint.queryItems
         return components?.url
     }
 }
