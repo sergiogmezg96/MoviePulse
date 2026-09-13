@@ -8,9 +8,9 @@
 
 /* Begin PBXFileReference section */
 		B8F9561A30507A4800CFB169 /* MoviePulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoviePulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8F9562A30507A4900CFB169 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
-		B8F9562B30507A4900CFB169 /* MoviePulse/Config/LocalConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MoviePulse/Config/LocalConfig.xcconfig; sourceTree = SOURCE_ROOT; };
-		B8F9562C30507A4900CFB169 /* MoviePulse/Config/LocalConfig.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MoviePulse/Config/LocalConfig.example.xcconfig; sourceTree = SOURCE_ROOT; };
+		B8F9562A30507A4900CFB169 /* ../CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ../CHANGELOG.md; sourceTree = SOURCE_ROOT; };
+		B8F9562B30507A4900CFB169 /* Config/LocalConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/LocalConfig.xcconfig; sourceTree = SOURCE_ROOT; };
+		B8F9562C30507A4900CFB169 /* Config/LocalConfig.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/LocalConfig.example.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,9 +35,9 @@
 		B8F9561130507A4800CFB169 = {
 			isa = PBXGroup;
 			children = (
-				B8F9562A30507A4900CFB169 /* CHANGELOG.md */,
-				B8F9562B30507A4900CFB169 /* MoviePulse/Config/LocalConfig.xcconfig */,
-				B8F9562C30507A4900CFB169 /* MoviePulse/Config/LocalConfig.example.xcconfig */,
+				B8F9562A30507A4900CFB169 /* ../CHANGELOG.md */,
+				B8F9562B30507A4900CFB169 /* Config/LocalConfig.xcconfig */,
+				B8F9562C30507A4900CFB169 /* Config/LocalConfig.example.xcconfig */,
 				B8F9561C30507A4800CFB169 /* MoviePulse */,
 				B8F9561B30507A4800CFB169 /* Products */,
 			);
@@ -255,7 +255,7 @@
 		};
 		B8F9562830507A4900CFB169 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B8F9562B30507A4900CFB169 /* MoviePulse/Config/LocalConfig.xcconfig */;
+			baseConfigurationReference = B8F9562B30507A4900CFB169 /* Config/LocalConfig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -288,7 +288,7 @@
 		};
 		B8F9562930507A4900CFB169 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B8F9562B30507A4900CFB169 /* MoviePulse/Config/LocalConfig.xcconfig */;
+			baseConfigurationReference = B8F9562B30507A4900CFB169 /* Config/LocalConfig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
