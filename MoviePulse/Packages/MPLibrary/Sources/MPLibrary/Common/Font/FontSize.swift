@@ -9,52 +9,52 @@ import Foundation
 import SwiftUI
 import UIKit
 
-enum FontSize {
-    static var caption2: Font { Font.Size.caption2.font }
-    static var caption2Semibold: Font { caption2(.semibold) }
-    static var caption2Bold: Font { caption2(.bold) }
+public enum FontSize {
+    public static var caption2: Font { Font.Size.caption2.font }
+    public static var caption2Semibold: Font { caption2(.semibold) }
+    public static var caption2Bold: Font { caption2(.bold) }
 
-    static var caption: Font { Font.Size.caption.font }
-    static var captionSemibold: Font { caption(.semibold) }
-    static var captionBold: Font { caption(.bold) }
+    public static var caption: Font { Font.Size.caption.font }
+    public static var captionSemibold: Font { caption(.semibold) }
+    public static var captionBold: Font { caption(.bold) }
 
-    static var footnote: Font { Font.Size.footnote.font }
-    static var footnoteSemibold: Font { footnote(.semibold) }
-    static var footnoteBold: Font { footnote(.bold) }
+    public static var footnote: Font { Font.Size.footnote.font }
+    public static var footnoteSemibold: Font { footnote(.semibold) }
+    public static var footnoteBold: Font { footnote(.bold) }
 
-    static var subheadline: Font { Font.Size.subheadline.font }
-    static var subheadlineSemibold: Font { subheadline(.semibold) }
-    static var subheadlineBold: Font { subheadline(.bold) }
+    public static var subheadline: Font { Font.Size.subheadline.font }
+    public static var subheadlineSemibold: Font { subheadline(.semibold) }
+    public static var subheadlineBold: Font { subheadline(.bold) }
 
-    static var callout: Font { Font.Size.callout.font }
-    static var calloutSemibold: Font { callout(.semibold) }
-    static var calloutBold: Font { callout(.bold) }
+    public static var callout: Font { Font.Size.callout.font }
+    public static var calloutSemibold: Font { callout(.semibold) }
+    public static var calloutBold: Font { callout(.bold) }
 
-    static var body: Font { Font.Size.body.font }
-    static var bodySemibold: Font { body(.semibold) }
-    static var bodyBold: Font { body(.bold) }
+    public static var body: Font { Font.Size.body.font }
+    public static var bodySemibold: Font { body(.semibold) }
+    public static var bodyBold: Font { body(.bold) }
 
-    static var headline: Font { Font.Size.headline.font }
-    static var headlineSemibold: Font { headline(.semibold) }
-    static var headlineBold: Font { headline(.bold) }
+    public static var headline: Font { Font.Size.headline.font }
+    public static var headlineSemibold: Font { headline(.semibold) }
+    public static var headlineBold: Font { headline(.bold) }
 
-    static var title3: Font { Font.Size.title3.font }
-    static var title3Semibold: Font { title3(.semibold) }
-    static var title3Bold: Font { title3(.bold) }
+    public static var title3: Font { Font.Size.title3.font }
+    public static var title3Semibold: Font { title3(.semibold) }
+    public static var title3Bold: Font { title3(.bold) }
 
-    static var title2: Font { Font.Size.title2.font }
-    static var title2Semibold: Font { title2(.semibold) }
-    static var title2Bold: Font { title2(.bold) }
+    public static var title2: Font { Font.Size.title2.font }
+    public static var title2Semibold: Font { title2(.semibold) }
+    public static var title2Bold: Font { title2(.bold) }
 
-    static var title: Font { Font.Size.title.font }
-    static var titleSemibold: Font { title(.semibold) }
-    static var titleBold: Font { title(.bold) }
+    public static var title: Font { Font.Size.title.font }
+    public static var titleSemibold: Font { title(.semibold) }
+    public static var titleBold: Font { title(.bold) }
 
-    static var largeTitle: Font { Font.Size.largeTitle.font }
-    static var largeTitleSemibold: Font { largeTitle(.semibold) }
-    static var largeTitleBold: Font { largeTitle(.bold) }
+    public static var largeTitle: Font { Font.Size.largeTitle.font }
+    public static var largeTitleSemibold: Font { largeTitle(.semibold) }
+    public static var largeTitleBold: Font { largeTitle(.bold) }
 
-    static func font(
+    public static func font(
         _ weight: Font.Weight = .regular,
         _ size: Font.Size,
         design: Font.Design = .default
@@ -62,63 +62,63 @@ enum FontSize {
         size.font(weight: weight, design: design)
     }
 
-    static func value(_ size: Font.Size) -> CGFloat {
+    public static func value(_ size: Font.Size) -> CGFloat {
         size.value
     }
 
-    static func scaledValue(
+    public static func scaledValue(
         _ size: Font.Size,
         compatibleWith traitCollection: UITraitCollection? = nil
     ) -> CGFloat {
         size.scaledValue(compatibleWith: traitCollection)
     }
 
-    static func caption2(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func caption2(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.caption2.font(weight: weight, design: design)
     }
 
-    static func caption(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func caption(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.caption.font(weight: weight, design: design)
     }
 
-    static func footnote(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func footnote(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.footnote.font(weight: weight, design: design)
     }
 
-    static func subheadline(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func subheadline(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.subheadline.font(weight: weight, design: design)
     }
 
-    static func callout(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func callout(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.callout.font(weight: weight, design: design)
     }
 
-    static func body(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func body(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.body.font(weight: weight, design: design)
     }
 
-    static func headline(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func headline(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.headline.font(weight: weight, design: design)
     }
 
-    static func title3(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func title3(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.title3.font(weight: weight, design: design)
     }
 
-    static func title2(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func title2(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.title2.font(weight: weight, design: design)
     }
 
-    static func title(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func title(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.title.font(weight: weight, design: design)
     }
 
-    static func largeTitle(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
+    public static func largeTitle(_ weight: Font.Weight, design: Font.Design = .default) -> Font {
         Font.Size.largeTitle.font(weight: weight, design: design)
     }
 }
 
-extension Font {
+public extension Font {
     enum Size: CGFloat, CaseIterable {
         case caption2 = 10
         case caption = 12

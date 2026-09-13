@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B8F9562D30507A4A00CFB169 /* MPLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8F9562E30507A4A00CFB169 /* MPLibrary */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B8F9561A30507A4800CFB169 /* MoviePulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoviePulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8F9562A30507A4900CFB169 /* ../CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ../CHANGELOG.md; sourceTree = SOURCE_ROOT; };
@@ -26,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8F9562D30507A4A00CFB169 /* MPLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +76,7 @@
 			);
 			name = MoviePulse;
 			packageProductDependencies = (
+				B8F9562E30507A4A00CFB169 /* MPLibrary */,
 			);
 			productName = MoviePulse;
 			productReference = B8F9561A30507A4800CFB169 /* MoviePulse.app */;
@@ -101,6 +107,9 @@
 			);
 			mainGroup = B8F9561130507A4800CFB169;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B8F9562F30507A4A00CFB169 /* XCLocalSwiftPackageReference "Packages/MPLibrary" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B8F9561B30507A4800CFB169 /* Products */;
 			projectDirPath = "";
@@ -341,6 +350,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B8F9562F30507A4A00CFB169 /* XCLocalSwiftPackageReference "Packages/MPLibrary" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MPLibrary;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B8F9562E30507A4A00CFB169 /* MPLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8F9562F30507A4A00CFB169 /* XCLocalSwiftPackageReference "Packages/MPLibrary" */;
+			productName = MPLibrary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B8F9561230507A4800CFB169 /* Project object */;
 }

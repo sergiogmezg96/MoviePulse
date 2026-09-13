@@ -9,6 +9,6 @@ import Foundation
 
 public enum ApiPath {
     public enum Movie {
-        static let popular = "/movie/popular"
+        public static let popular = "/movie/popular"
     }
 }

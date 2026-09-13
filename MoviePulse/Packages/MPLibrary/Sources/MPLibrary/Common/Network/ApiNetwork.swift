@@ -8,7 +8,7 @@
 import Foundation
 
 public enum ApiNetwork {
-    static func makeRequest(from apiRequest: ApiRequest) throws -> URLRequest {
+    public static func makeRequest(from apiRequest: ApiRequest) throws -> URLRequest {
         guard let url = makeURL(endpoint: apiRequest.url) else {
             throw ApiError.malformedURL
         }
@@ -25,7 +25,7 @@ public enum ApiNetwork {
         return request
     }
 
-    static func makeEndpoint(
+    public static func makeEndpoint(
         path: String,
         apiKey: String,
         queryItems: [URLQueryItem] = []
@@ -38,7 +38,7 @@ public enum ApiNetwork {
         )
     }
 
-    static func defaultMovieQueryItems(
+    public static func defaultMovieQueryItems(
         language: String = "es-ES",
         page: Int = 1
     ) -> [URLQueryItem] {

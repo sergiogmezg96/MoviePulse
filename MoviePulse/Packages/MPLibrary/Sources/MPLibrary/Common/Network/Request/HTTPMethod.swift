@@ -12,7 +12,7 @@ public enum HTTPMethod {
     case post
     case put
     
-    var value: String {
+    public var value: String {
         switch self {
             case .get: "GET"
             case .post: "POST"

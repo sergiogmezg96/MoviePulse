@@ -8,7 +8,7 @@
 import Foundation
 
 public enum AppConfig {
-    static var tmdbApiKey: String {
+    public static var tmdbApiKey: String {
         guard
             let apiKey = Bundle.main.object(forInfoDictionaryKey: "TMDB_API_KEY") as? String,
             !apiKey.isEmpty

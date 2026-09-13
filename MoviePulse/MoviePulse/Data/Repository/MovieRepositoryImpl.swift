@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MPLibrary
 
 struct MovieRepositoryImpl: MovieRepository {
     private let apiKey: String

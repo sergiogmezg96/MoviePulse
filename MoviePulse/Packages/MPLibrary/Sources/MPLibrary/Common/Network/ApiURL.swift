@@ -8,5 +8,5 @@
 import Foundation
 
 public enum ApiURL {
-    static let base = URL(string: "https://api.themoviedb.org/3")
+    public static let base = URL(string: "https://api.themoviedb.org/3")
 }

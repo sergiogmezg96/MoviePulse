@@ -8,11 +8,11 @@
 import Foundation
 
 public struct ApiRequest {
-    let url: Endpoint
-    var method: HTTPMethod = .get
-    var headers: [String: String]?
-    var body: Data?
-    var contentType: String
+    public let url: Endpoint
+    public var method: HTTPMethod = .get
+    public var headers: [String: String]?
+    public var body: Data?
+    public var contentType: String
     
     public init(
         url: Endpoint,
