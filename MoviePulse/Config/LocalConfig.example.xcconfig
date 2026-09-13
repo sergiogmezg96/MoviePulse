@@ -1,0 +1,8 @@
+//
+//  LocalConfig.example.xcconfig
+//  MoviePulse
+//
+//  Copy this file to LocalConfig.xcconfig and set your local values.
+//
+
+TMDB_API_KEY = your_tmdb_api_key
