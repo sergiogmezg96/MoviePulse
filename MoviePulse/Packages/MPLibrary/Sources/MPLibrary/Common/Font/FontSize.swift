@@ -16,7 +16,6 @@ public enum FontSize {
     public static var caption2Semibold: Font { caption2(.semibold) }
     /// PointSize: 10
     public static var caption2Bold: Font { caption2(.bold) }
-
     /// PointSize: 12
     public static var caption: Font { Font.Size.caption.font }
     /// PointSize: 12
