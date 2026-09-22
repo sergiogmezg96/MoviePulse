@@ -8,29 +8,24 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State var homeStore = AppRootView.makeHomeStore()
+    private let dependencyContainer: AppDependencyContainer
+
+    @State var homeStore: HomeStore
     @State var selectedTab: AppRootTab = .home
     @State var navigationPath = NavigationPath()
+
+    init(dependencyContainer: AppDependencyContainer = AppDependencyContainer()) {
+        self.dependencyContainer = dependencyContainer
+        _homeStore = State(initialValue: dependencyContainer.makeHomeStore())
+    }
 
     var body: some View {
         rootContent
     }
 }
 
-private extension AppRootView {
-    static func makeHomeStore() -> HomeStore {
-        return HomeStore(
-            getMoviesUseCase: GetMoviesUseCase(
-                repository: MovieRepositoryImpl(
-                    apiKey: MoviePulseConfiguration.tmdbApiKey
-                )
-            )
-        )
-    }
-}
-
 enum AppRoute: Hashable {
-    case movieDetail
+    case movieDetail(HomeMovieViewData)
 }
 
 #Preview {

@@ -32,12 +32,13 @@ struct HomeGenreSectionViewData: Equatable, Identifiable {
     let movies: [HomeMovieViewData]
 }
 
-struct HomeMovieViewData: Equatable, Identifiable {
+struct HomeMovieViewData: Equatable, Hashable, Identifiable {
     let id: Int
     let title: String
     let subtitle: String
     let overview: String
     let releaseDate: String
+    let voteAverage: Double
     let imageURL: URL?
     let backdropURL: URL?
 }

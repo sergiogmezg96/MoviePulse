@@ -10,9 +10,12 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
-    let onMovieTap: () -> Void
+    let onMovieTap: (HomeMovieViewData) -> Void
     
-    init(store: HomeStore, onMovieTap: @escaping () -> Void = {}) {
+    init(
+        store: HomeStore,
+        onMovieTap: @escaping (HomeMovieViewData) -> Void = { _ in }
+    ) {
         self.store = store
         self.onMovieTap = onMovieTap
     }
@@ -57,7 +60,7 @@ struct HomeView: View {
 
 private struct MovieGenresSection: View {
     let genres: [HomeGenreSectionViewData]
-    let onMovieTap: () -> Void
+    let onMovieTap: (HomeMovieViewData) -> Void
     
     var body: some View {
         LazyVStack(spacing: CustomSize.size8) {
@@ -65,13 +68,13 @@ private struct MovieGenresSection: View {
                 MovieGenreListItem(
                     config: MovieGenreListItemConfig(
                         genreTitle: genre.title,
-                        subtitle: "See All",
+                        subtitle: "see-all-key".localized,
                         movies: genre.movies,
                         imageURL: { $0.imageURL },
                         movieTitle: { $0.title },
                         onSeeAllTap: {},
-                        onMovieTap: { _ in
-                            onMovieTap()
+                        onMovieTap: { movie in
+                            onMovieTap(movie)
                         }
                     )
                 )
@@ -83,7 +86,7 @@ private struct MovieGenresSection: View {
 
 private struct DiscoverSection: View {
     let movie: HomeMovieViewData?
-    let onTap: () -> Void
+    let onTap: (HomeMovieViewData) -> Void
     
     var body: some View {
         GeometryReader { proxy in
@@ -173,7 +176,13 @@ private struct DiscoverSection: View {
             }
         }
         .contentShape(Rectangle())
-        .onTapGesture(perform: onTap)
+        .onTapGesture {
+            guard let movie else {
+                return
+            }
+
+            onTap(movie)
+        }
         .frame(height: Constants.imageHeight)
         .padding(.horizontal, CustomSize.size20)
     }
@@ -228,9 +237,14 @@ private struct HeaderSection: View {
     
     var body: some View {
         HStack {
-            Text("MoviePulse")
-                .font(FontSize.largeTitleBold)
-                .foregroundColor(AppColor.textPrimary)
+            (
+                Text("Movie")
+                    .foregroundColor(AppColor.textPrimary)
+                +
+                Text("Pulse")
+                    .foregroundColor(AppColor.primary)
+            )
+            .font(FontSize.largeTitleBold)
             
             Spacer()
             
@@ -263,10 +277,11 @@ private struct HeaderSection: View {
                     subtitle: "Science Fiction",
                     overview: "Adventure beyond the known universe",
                     releaseDate: "2026-01-01",
+                    voteAverage: 8,
                     imageURL: nil,
                     backdropURL: nil
                 ),
-                onTap: {}
+                onTap: { _ in }
             )
             MovieGenresSection(
                 genres: [
@@ -274,12 +289,12 @@ private struct HeaderSection: View {
                         id: 0,
                         title: "Trending Now",
                         movies: [
-                            HomeMovieViewData(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", imageURL: nil, backdropURL: nil),
-                            HomeMovieViewData(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", imageURL: nil, backdropURL: nil)
+                            HomeMovieViewData(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
+                            HomeMovieViewData(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
                         ]
                     )
                 ],
-                onMovieTap: {}
+                onMovieTap: { _ in }
             )
         }
     }

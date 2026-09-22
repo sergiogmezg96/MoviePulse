@@ -57,8 +57,13 @@ extension AppRootView {
             .background(AppColor.background.opacity(0.95))
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
-                case .movieDetail:
-                    MovieDetailView()
+                case .movieDetail(let movie):
+                    MovieDetailView(
+                        movie: movie,
+                        onBackTap: {
+                            navigationPath.removeLast()
+                        }
+                    )
                         .toolbar(.hidden, for: .navigationBar)
                 }
             }
@@ -71,8 +76,8 @@ extension AppRootView {
         case .home:
             HomeView(
                 store: homeStore,
-                onMovieTap: {
-                    navigationPath.append(AppRoute.movieDetail)
+                onMovieTap: { movie in
+                    navigationPath.append(AppRoute.movieDetail(movie))
                 }
             )
         case .browse, .myList, .downloads:

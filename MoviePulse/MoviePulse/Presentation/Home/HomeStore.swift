@@ -17,9 +17,9 @@ final class HomeStore {
     private let moviesMapper: HomeMoviesMapper
 
     init(
-        state: HomeViewState = .initial,
+        state: HomeViewState,
         getMoviesUseCase: GetMoviesUseCase,
-        moviesMapper: HomeMoviesMapper = HomeMoviesMapper()
+        moviesMapper: HomeMoviesMapper
     ) {
         self.state = state
         self.getMoviesUseCase = getMoviesUseCase

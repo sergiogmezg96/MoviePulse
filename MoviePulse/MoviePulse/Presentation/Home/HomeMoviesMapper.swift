@@ -59,6 +59,7 @@ struct HomeMoviesMapper {
             subtitle: movie.genreIds.first.map(genreTitle) ?? "",
             overview: movie.overview,
             releaseDate: movie.releaseDate,
+            voteAverage: movie.voteAverage,
             imageURL: makePosterURL(from: movie.posterPath),
             backdropURL: makeBackdropURL(from: movie.backdropPath)
         )
