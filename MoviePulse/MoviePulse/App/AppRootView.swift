@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State private var homeStore = HomeStore()
+    @State var homeStore = HomeStore()
+    @State var selectedTab: AppRootTab = .home
 
     var body: some View {
-        HomeView(store: homeStore)
+        rootContent
     }
 }
 
