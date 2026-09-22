@@ -15,7 +15,7 @@ struct MovieRepositoryImpl: MovieRepository {
         self.apiKey = apiKey
     }
 
-    func getMovies() async throws -> [any MovieDomainModel] {
+    func getMovies() async throws -> [MovieDomainModel] {
         let endpoint = ApiNetwork.makeEndpoint(
             path: ApiPath.Movie.popular,
             apiKey: apiKey,
