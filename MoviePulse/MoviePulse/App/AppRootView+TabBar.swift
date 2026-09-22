@@ -44,23 +44,37 @@ enum AppRootTab: CaseIterable {
 extension AppRootView {
     
     var rootContent: some View {
-        VStack(spacing: CustomSize.size0) {
-            selectedTabContent
-            
-            MPTabBar(
-                config: MPTabBarConfig(
-                    tabBarItems: tabBarItems
+        NavigationStack(path: $navigationPath) {
+            VStack(spacing: CustomSize.size0) {
+                selectedTabContent
+                
+                MPTabBar(
+                    config: MPTabBarConfig(
+                        tabBarItems: tabBarItems
+                    )
                 )
-            )
+            }
+            .background(AppColor.background.opacity(0.95))
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .movieDetail:
+                    MovieDetailView()
+                        .toolbar(.hidden, for: .navigationBar)
+                }
+            }
         }
-        .background(AppColor.background.opacity(0.95))
     }
     
     @ViewBuilder
     private var selectedTabContent: some View {
         switch selectedTab {
         case .home:
-            HomeView(store: homeStore)
+            HomeView(
+                store: homeStore,
+                onMovieTap: {
+                    navigationPath.append(AppRoute.movieDetail)
+                }
+            )
         case .browse, .myList, .downloads:
             EmptyTabView(title: selectedTab.title)
         }
