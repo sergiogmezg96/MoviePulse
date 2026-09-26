@@ -5,21 +5,23 @@
 //  Created by Sergio Gómez García on 22/09/2026.
 //
 
-struct AppDependencyContainer {
+final class AppDependencyContainer {
     private let apiKey: String
+    private lazy var movieRepositoryImpl: MovieRepositoryImpl = {
+        MovieRepositoryImpl(apiKey: apiKey)
+    }()
 
     init(apiKey: String = MoviePulseConfiguration.tmdbApiKey) {
         self.apiKey = apiKey
     }
     
-    // MARK: Repository
-    func makeMovieRepository() -> MovieRepository {
-        MovieRepositoryImpl(apiKey: apiKey)
-    }
-
     // MARK: Use cases
     func makeGetMoviesUseCase() -> GetMoviesUseCase {
-        GetMoviesUseCase(repository: makeMovieRepository())
+        GetMoviesUseCase(repository: movieRepositoryImpl)
+    }
+
+    func makeSaveFavoriteMovieUseCase() -> SaveFavoriteMovieUseCase {
+        SaveFavoriteMovieUseCase(repository: movieRepositoryImpl)
     }
 
     // MARK: Stores
@@ -28,6 +30,7 @@ struct AppDependencyContainer {
         HomeStore(
             state: .initial,
             getMoviesUseCase: makeGetMoviesUseCase(),
+            saveFavoriteMovieUseCase: makeSaveFavoriteMovieUseCase(),
             moviesMapper: HomeMoviesMapper()
         )
     }

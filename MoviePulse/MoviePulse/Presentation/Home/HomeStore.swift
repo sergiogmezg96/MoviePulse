@@ -14,15 +14,18 @@ final class HomeStore {
     private(set) var state: HomeViewState
 
     private let getMoviesUseCase: GetMoviesUseCase
+    private let saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase
     private let moviesMapper: HomeMoviesMapper
 
     init(
         state: HomeViewState,
         getMoviesUseCase: GetMoviesUseCase,
+        saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase,
         moviesMapper: HomeMoviesMapper
     ) {
         self.state = state
         self.getMoviesUseCase = getMoviesUseCase
+        self.saveFavoriteMovieUseCase = saveFavoriteMovieUseCase
         self.moviesMapper = moviesMapper
     }
 
@@ -33,9 +36,8 @@ final class HomeStore {
         case .selectGenre:
             //TODO: Do see genre movies.
             break
-        case .addMovieToMyList:
-            //TODO: Do add to my list.
-            break
+        case .addMovieToMyList(let movie):
+            saveFavoriteMovie(movie)
         case .selectMovie:
             //TODO: Do see movie details.
             break
@@ -85,6 +87,14 @@ final class HomeStore {
                     genreSections: []
                 )
             }
+        }
+    }
+
+    private func saveFavoriteMovie(_ movie: MovieUIModel) {
+        Task {
+            try? await saveFavoriteMovieUseCase.execute(
+                request: moviesMapper.mapFavoriteMovie(movie)
+            )
         }
     }
 }

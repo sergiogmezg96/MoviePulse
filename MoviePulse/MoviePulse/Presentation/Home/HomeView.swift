@@ -10,11 +10,11 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
-    let onMovieTap: (HomeMovieUIModel) -> Void
+    let onMovieTap: (MovieUIModel) -> Void
     
     init(
         store: HomeStore,
-        onMovieTap: @escaping (HomeMovieUIModel) -> Void = { _ in }
+        onMovieTap: @escaping (MovieUIModel) -> Void = { _ in }
     ) {
         self.store = store
         self.onMovieTap = onMovieTap
@@ -26,7 +26,10 @@ struct HomeView: View {
                 HeaderSection()
                 DiscoverSection(
                     movie: store.state.featuredMovie,
-                    onTap: onMovieTap
+                    onSeeDetailsTap: onMovieTap,
+                    onAddToMyListTap: { movie in
+                        store.process(.addMovieToMyList(movie))
+                    }
                 )
                 content
             }
@@ -60,7 +63,7 @@ struct HomeView: View {
 
 private struct MovieGenresSection: View {
     let genres: [HomeGenreSectionUIModel]
-    let onMovieTap: (HomeMovieUIModel) -> Void
+    let onMovieTap: (MovieUIModel) -> Void
     
     var body: some View {
         LazyVStack(spacing: CustomSize.size8) {
@@ -85,8 +88,9 @@ private struct MovieGenresSection: View {
 }
 
 private struct DiscoverSection: View {
-    let movie: HomeMovieUIModel?
-    let onTap: (HomeMovieUIModel) -> Void
+    let movie: MovieUIModel?
+    let onSeeDetailsTap: (MovieUIModel) -> Void
+    let onAddToMyListTap: (MovieUIModel) -> Void
     
     var body: some View {
         GeometryReader { proxy in
@@ -135,9 +139,15 @@ private struct DiscoverSection: View {
                                 horizontalPadding: CustomSize.size16,
                                 verticalPadding: CustomSize.size10,
                                 font: FontSize.captionBold,
-                                iconName: "play.fill",
-                                text: "Play",
-                                action: {}
+                                iconName: "info.circle.fill",
+                                text: "home_see_details".localized,
+                                action: {
+                                    guard let movie else {
+                                        return
+                                    }
+
+                                    onSeeDetailsTap(movie)
+                                }
                             )
                         )
                         
@@ -149,8 +159,14 @@ private struct DiscoverSection: View {
                                 verticalPadding: CustomSize.size10,
                                 font: FontSize.captionBold,
                                 iconName: "plus",
-                                text: "My List",
-                                action: {}
+                                text: "tab_my_list".localized,
+                                action: {
+                                    guard let movie else {
+                                        return
+                                    }
+
+                                    onAddToMyListTap(movie)
+                                }
                             )
                         )
                         
@@ -181,7 +197,7 @@ private struct DiscoverSection: View {
                 return
             }
 
-            onTap(movie)
+            onSeeDetailsTap(movie)
         }
         .frame(height: Constants.imageHeight)
         .padding(.horizontal, CustomSize.size20)
@@ -271,7 +287,7 @@ private struct HeaderSection: View {
         VStack(spacing: CustomSize.size0) {
             HeaderSection()
             DiscoverSection(
-                movie: HomeMovieUIModel(
+                movie: MovieUIModel(
                     id: 1,
                     title: "The Last Horizon",
                     subtitle: "Science Fiction",
@@ -281,7 +297,8 @@ private struct HeaderSection: View {
                     imageURL: nil,
                     backdropURL: nil
                 ),
-                onTap: { _ in }
+                onSeeDetailsTap: { _ in },
+                onAddToMyListTap: { _ in }
             )
             MovieGenresSection(
                 genres: [
@@ -289,8 +306,8 @@ private struct HeaderSection: View {
                         id: 0,
                         title: "Trending Now",
                         movies: [
-                            HomeMovieUIModel(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
-                            HomeMovieUIModel(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
+                            MovieUIModel(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
+                            MovieUIModel(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
                         ]
                     )
                 ],

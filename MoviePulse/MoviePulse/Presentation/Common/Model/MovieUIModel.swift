@@ -1,5 +1,5 @@
 //
-//  HomeMovieUIModel.swift
+//  MovieUIModel.swift
 //  MoviePulse
 //
 //  Created by Sergio Gómez García on 26/09/2026.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct HomeMovieUIModel: Equatable, Hashable, Identifiable {
+struct MovieUIModel: Equatable, Hashable, Identifiable {
     let id: Int
     let title: String
     let subtitle: String

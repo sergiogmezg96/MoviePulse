@@ -9,7 +9,7 @@ import Foundation
 import MPLibrary
 
 struct HomeMoviesMapper {
-    func mapFeaturedMovie(_ movies: [MovieDomainModel]) -> HomeMovieUIModel? {
+    func mapFeaturedMovie(_ movies: [MovieDomainModel]) -> MovieUIModel? {
         movies
             .filter { !$0.releaseDate.isEmpty }
             .max { firstMovie, secondMovie in
@@ -29,6 +29,19 @@ struct HomeMoviesMapper {
                 movies: genreMovies
             )
         }
+    }
+
+    func mapFavoriteMovie(_ movie: MovieUIModel) -> FavoriteMovieDomainModel {
+        FavoriteMovieDomainModel(
+            id: movie.id,
+            title: movie.title,
+            subtitle: movie.subtitle,
+            overview: movie.overview,
+            releaseDate: movie.releaseDate,
+            voteAverage: movie.voteAverage,
+            imageURL: movie.imageURL,
+            backdropURL: movie.backdropURL
+        )
     }
 
     private func uniqueGenreIds(from movies: [MovieDomainModel]) -> [Int] {
@@ -54,8 +67,8 @@ struct HomeMoviesMapper {
         )
     }
 
-    private func mapMovie(_ movie: MovieDomainModel) -> HomeMovieUIModel {
-        HomeMovieUIModel(
+    private func mapMovie(_ movie: MovieDomainModel) -> MovieUIModel {
+        MovieUIModel(
             id: movie.id,
             title: movie.title,
             subtitle: movie.genreIds.first.map(genreTitle) ?? "",
