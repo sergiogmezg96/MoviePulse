@@ -7,10 +7,14 @@
 
 import Foundation
 
-public protocol MovieRepository {
+protocol MovieRepository {
     func getMovies() async throws -> [MovieDomainModel]
-    func save(_ movie: FavoriteMovieDomainModel) async throws
-    func delete(_ id: Int) async throws
+    func saveFavorite(_ movie: FavoriteMovieDomainModel) async throws
+    func deleteFavorite(_ id: Int) async throws
     func getFavorites() async throws -> [FavoriteMovieDomainModel]
     func getFavoriteById(by id: Int) async throws -> FavoriteMovieDomainModel?
+    func saveToMyList(_ movie: MovieUIModel) async throws
+    func deleteFromMyList(_ id: Int) async throws
+    func getMyList() async throws -> [MovieUIModel]
+    func getMyListMovieById(by id: Int) async throws -> MovieUIModel?
 }

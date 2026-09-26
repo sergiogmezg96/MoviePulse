@@ -1,5 +1,5 @@
 //
-//  GetFavoriteMovieByIdUseCase.swift
+//  SaveMovieToMyListUseCase.swift
 //  MoviePulse
 //
 //  Created by Sergio Gómez García on 26/09/2026.
@@ -8,14 +8,14 @@
 import Foundation
 import MPLibrary
 
-struct GetFavoriteMovieByIdUseCase: MPUseCase {
+struct SaveMovieToMyListUseCase: MPUseCase {
     private let repository: MovieRepository
 
     init(repository: MovieRepository) {
         self.repository = repository
     }
 
-    func execute(request id: Int) async throws -> FavoriteMovieDomainModel? {
-        try await repository.getFavoriteById(by: id)
+    func execute(request movie: MovieUIModel) async throws {
+        try await repository.saveToMyList(movie)
     }
 }

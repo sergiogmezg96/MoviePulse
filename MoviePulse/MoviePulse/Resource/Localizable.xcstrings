@@ -482,6 +482,54 @@
         }
       }
     },
+    "home_see_details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See details"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver detalles"
+          }
+        }
+      }
+    },
+    "movie_detail_added_to_list" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadida"
+          }
+        }
+      }
+    },
+    "movie_detail_rate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rate"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puntuar"
+          }
+        }
+      }
+    },
     "tab_browse" : {
       "localizations" : {
         "en" : {

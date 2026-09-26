@@ -40,7 +40,7 @@ struct MovieRepositoryImpl: MovieRepository {
         return response.results.map(\.domainModel)
     }
 
-    func save(_ movie: FavoriteMovieDomainModel) async throws {
+    func saveFavorite(_ movie: FavoriteMovieDomainModel) async throws {
         var movies = try await getFavorites()
 
         guard !movies.contains(where: { $0.id == movie.id }) else {
@@ -48,13 +48,13 @@ struct MovieRepositoryImpl: MovieRepository {
         }
 
         movies.append(movie)
-        try saveFavorites(movies)
+        try save(movies, key: Constants.favoriteMoviesKey)
     }
 
-    func delete(_ id: Int) async throws {
+    func deleteFavorite(_ id: Int) async throws {
         let favorites = try await getFavorites()
         let movies = favorites.filter { $0.id != id }
-        try saveFavorites(movies)
+        try save(movies, key: Constants.favoriteMoviesKey)
     }
 
     func getFavorites() async throws -> [FavoriteMovieDomainModel] {
@@ -70,12 +70,43 @@ struct MovieRepositoryImpl: MovieRepository {
         return favorites.first { $0.id == id }
     }
 
-    private func saveFavorites(_ movies: [FavoriteMovieDomainModel]) throws {
+    func saveToMyList(_ movie: MovieUIModel) async throws {
+        var movies = try await getMyList()
+
+        guard !movies.contains(where: { $0.id == movie.id }) else {
+            return
+        }
+
+        movies.append(movie)
+        try save(movies, key: Constants.myListMoviesKey)
+    }
+
+    func deleteFromMyList(_ id: Int) async throws {
+        let myList = try await getMyList()
+        let movies = myList.filter { $0.id != id }
+        try save(movies, key: Constants.myListMoviesKey)
+    }
+
+    func getMyList() async throws -> [MovieUIModel] {
+        guard let data = userDefaults.data(forKey: Constants.myListMoviesKey) else {
+            return []
+        }
+
+        return try JSONDecoder().decode([MovieUIModel].self, from: data)
+    }
+
+    func getMyListMovieById(by id: Int) async throws -> MovieUIModel? {
+        let myList = try await getMyList()
+        return myList.first { $0.id == id }
+    }
+
+    private func save<T: Encodable>(_ movies: T, key: String) throws {
         let data = try JSONEncoder().encode(movies)
-        userDefaults.set(data, forKey: Constants.favoriteMoviesKey)
+        userDefaults.set(data, forKey: key)
     }
 
     private enum Constants {
         static let favoriteMoviesKey = "moviepulse.favorite.movies"
+        static let myListMoviesKey = "moviepulse.my-list.movies"
     }
 }

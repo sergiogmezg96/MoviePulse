@@ -8,14 +8,14 @@
 import Foundation
 import MPLibrary
 
-public struct DeleteFavoriteMovieUseCase: MPUseCase {
+struct DeleteFavoriteMovieUseCase: MPUseCase {
     private let repository: MovieRepository
 
-    public init(repository: MovieRepository) {
+    init(repository: MovieRepository) {
         self.repository = repository
     }
 
-    public func execute(request id: Int) async throws {
-        try await repository.delete(id)
+    func execute(request id: Int) async throws {
+        try await repository.deleteFavorite(id)
     }
 }

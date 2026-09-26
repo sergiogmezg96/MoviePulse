@@ -8,14 +8,14 @@
 import Foundation
 import MPLibrary
 
-public struct GetFavoriteMoviesUseCase: MPUseCase {
+struct GetFavoriteMoviesUseCase: MPUseCase {
     private let repository: MovieRepository
 
-    public init(repository: MovieRepository) {
+    init(repository: MovieRepository) {
         self.repository = repository
     }
 
-    public func execute(request: ()) async throws -> [FavoriteMovieDomainModel] {
+    func execute(request: ()) async throws -> [FavoriteMovieDomainModel] {
         try await repository.getFavorites()
     }
 }
