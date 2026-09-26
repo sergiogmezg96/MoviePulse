@@ -9,11 +9,11 @@ import SwiftUI
 import MPLibrary
 
 struct MovieDetailView: View {
-    let movie: HomeMovieViewData
+    let movie: HomeMovieUIModel
     let onBackTap: () -> Void
 
     init(
-        movie: HomeMovieViewData,
+        movie: HomeMovieUIModel,
         onBackTap: @escaping () -> Void = {}
     ) {
         self.movie = movie
@@ -44,7 +44,7 @@ struct MovieDetailView: View {
 }
 
 private  struct MovieInfoSection: View {
-    let movie: HomeMovieViewData
+    let movie: HomeMovieUIModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: CustomSize.size16) {
@@ -102,7 +102,7 @@ private  struct MovieInfoSection: View {
 }
 
 private struct MovieOverviewSection: View {
-    let movie: HomeMovieViewData
+    let movie: HomeMovieUIModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: CustomSize.size12) {
@@ -288,7 +288,7 @@ private extension CGFloat {
 
 #Preview {
     MovieDetailView(
-        movie: HomeMovieViewData(
+        movie: HomeMovieUIModel(
             id: 1,
             title: "The Last Horizon",
             subtitle: "Science Fiction",
@@ -296,7 +296,7 @@ private extension CGFloat {
             releaseDate: "2026-01-01",
             voteAverage: 8,
             imageURL: nil,
-            backdropURL: nil
+            backdropURL: nil,
         )
     )
 }

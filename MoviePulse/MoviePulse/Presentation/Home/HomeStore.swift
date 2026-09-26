@@ -80,36 +80,11 @@ final class HomeStore {
                 )
             } catch {
                 state = HomeViewState(
-                    status: .failed(message: makeErrorMessage(from: error)),
+                    status: .failed(message: ApiErrorMapping.message(for: error)),
                     featuredMovie: nil,
                     genreSections: []
                 )
             }
-        }
-    }
-
-    private func makeErrorMessage(from error: Error) -> String {
-        guard let apiError = error as? ApiError else {
-            return "No se han podido cargar las peliculas."
-        }
-
-        switch apiError {
-        case .unauthorized:
-            return "API key de TMDb no valida."
-        case .forbidden:
-            return "TMDb ha rechazado la peticion."
-        case .dataParsingError:
-            return "No se ha podido leer la respuesta de peliculas."
-        case .malformedURL:
-            return "La URL de peliculas no es valida."
-        case .networkError:
-            return "No hay conexion con TMDb."
-        case .serviceUnavailable:
-            return "TMDb no esta disponible ahora mismo."
-        case .serverError:
-            return "TMDb ha devuelto un error de servidor."
-        case .invalidResponse, .unknownError:
-            return "No se han podido cargar las peliculas."
         }
     }
 }

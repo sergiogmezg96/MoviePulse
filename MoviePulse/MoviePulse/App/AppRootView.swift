@@ -25,7 +25,7 @@ struct AppRootView: View {
 }
 
 enum AppRoute: Hashable {
-    case movieDetail(HomeMovieViewData)
+    case movieDetail(HomeMovieUIModel)
 }
 
 #Preview {

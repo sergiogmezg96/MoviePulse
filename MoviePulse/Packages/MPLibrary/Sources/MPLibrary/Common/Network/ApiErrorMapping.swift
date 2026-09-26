@@ -8,6 +8,10 @@
 import Foundation
 
 public struct ApiErrorMapping {
+    public static func message(for error: Error) -> String {
+        message(for: (error as? ApiError) ?? .unknownError)
+    }
+
     public static func message(for error: ApiError) -> String {
         switch error {
         case .networkError:

@@ -10,11 +10,11 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
-    let onMovieTap: (HomeMovieViewData) -> Void
+    let onMovieTap: (HomeMovieUIModel) -> Void
     
     init(
         store: HomeStore,
-        onMovieTap: @escaping (HomeMovieViewData) -> Void = { _ in }
+        onMovieTap: @escaping (HomeMovieUIModel) -> Void = { _ in }
     ) {
         self.store = store
         self.onMovieTap = onMovieTap
@@ -59,8 +59,8 @@ struct HomeView: View {
 }
 
 private struct MovieGenresSection: View {
-    let genres: [HomeGenreSectionViewData]
-    let onMovieTap: (HomeMovieViewData) -> Void
+    let genres: [HomeGenreSectionUIModel]
+    let onMovieTap: (HomeMovieUIModel) -> Void
     
     var body: some View {
         LazyVStack(spacing: CustomSize.size8) {
@@ -85,8 +85,8 @@ private struct MovieGenresSection: View {
 }
 
 private struct DiscoverSection: View {
-    let movie: HomeMovieViewData?
-    let onTap: (HomeMovieViewData) -> Void
+    let movie: HomeMovieUIModel?
+    let onTap: (HomeMovieUIModel) -> Void
     
     var body: some View {
         GeometryReader { proxy in
@@ -271,7 +271,7 @@ private struct HeaderSection: View {
         VStack(spacing: CustomSize.size0) {
             HeaderSection()
             DiscoverSection(
-                movie: HomeMovieViewData(
+                movie: HomeMovieUIModel(
                     id: 1,
                     title: "The Last Horizon",
                     subtitle: "Science Fiction",
@@ -285,12 +285,12 @@ private struct HeaderSection: View {
             )
             MovieGenresSection(
                 genres: [
-                    HomeGenreSectionViewData(
+                    HomeGenreSectionUIModel(
                         id: 0,
                         title: "Trending Now",
                         movies: [
-                            HomeMovieViewData(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
-                            HomeMovieViewData(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
+                            HomeMovieUIModel(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
+                            HomeMovieUIModel(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
                         ]
                     )
                 ],

@@ -16,29 +16,12 @@ enum HomeViewStatus: Equatable {
 
 struct HomeViewState: Equatable {
     let status: HomeViewStatus
-    let featuredMovie: HomeMovieViewData?
-    let genreSections: [HomeGenreSectionViewData]
+    let featuredMovie: HomeMovieUIModel?
+    let genreSections: [HomeGenreSectionUIModel]
 
     static let initial = HomeViewState(
         status: .idle,
         featuredMovie: nil,
         genreSections: []
     )
-}
-
-struct HomeGenreSectionViewData: Equatable, Identifiable {
-    let id: Int
-    let title: String
-    let movies: [HomeMovieViewData]
-}
-
-struct HomeMovieViewData: Equatable, Hashable, Identifiable {
-    let id: Int
-    let title: String
-    let subtitle: String
-    let overview: String
-    let releaseDate: String
-    let voteAverage: Double
-    let imageURL: URL?
-    let backdropURL: URL?
 }
