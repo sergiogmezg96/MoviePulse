@@ -10,19 +10,57 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
+    let onMovieTap: (HomeMovieUIModel) -> Void
+    
+    init(
+        store: HomeStore,
+        onMovieTap: @escaping (HomeMovieUIModel) -> Void = { _ in }
+    ) {
+        self.store = store
+        self.onMovieTap = onMovieTap
+    }
     
     var body: some View {
-        VStack(spacing: CustomSize.size0) {
-            HeaderSection()
-            DiscoverSection()
-            Spacer()
+        ScrollView {
+            VStack(spacing: CustomSize.size0) {
+                HeaderSection()
+                DiscoverSection(
+                    movie: store.state.featuredMovie,
+                    onTap: onMovieTap
+                )
+                content
+            }
         }
         .background(AppColor.background.opacity(0.95))
+        .task {
+            store.process(.viewDidAppear)
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch store.state.status {
+        case .idle, .loading:
+            ProgressView()
+                .padding(.top, CustomSize.size24)
+        case .loaded:
+            MovieGenresSection(
+                genres: store.state.genreSections,
+                onMovieTap: onMovieTap
+            )
+        case .failed(let message):
+            Text(message)
+                .font(FontSize.subheadline)
+                .foregroundColor(AppColor.textSecondary)
+                .padding(.top, CustomSize.size24)
+                .padding(.horizontal, CustomSize.size24)
+        }
     }
 }
 
 private struct MovieGenresSection: View {
-    let genres: [HomeGenreItem]
+    let genres: [HomeGenreSectionUIModel]
+    let onMovieTap: (HomeMovieUIModel) -> Void
     
     var body: some View {
         LazyVStack(spacing: CustomSize.size8) {
@@ -30,12 +68,14 @@ private struct MovieGenresSection: View {
                 MovieGenreListItem(
                     config: MovieGenreListItemConfig(
                         genreTitle: genre.title,
-                        subtitle: "See All",
+                        subtitle: "see-all-key".localized,
                         movies: genre.movies,
                         imageURL: { $0.imageURL },
                         movieTitle: { $0.title },
                         onSeeAllTap: {},
-                        onMovieTap: { _ in }
+                        onMovieTap: { movie in
+                            onMovieTap(movie)
+                        }
                     )
                 )
             }
@@ -45,13 +85,13 @@ private struct MovieGenresSection: View {
 }
 
 private struct DiscoverSection: View {
+    let movie: HomeMovieUIModel?
+    let onTap: (HomeMovieUIModel) -> Void
     
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                Image("the-last")
-                    .resizable()
-                    .scaledToFill()
+                backdropImage
                     .frame(width: proxy.size.width, height: Constants.imageHeight)
                     .clipped()
                 
@@ -68,17 +108,18 @@ private struct DiscoverSection: View {
                 VStack {
                     HStack {
                         VStack(alignment: .leading, spacing: CustomSize.size8) {
-                            Text("The Last Horizon")
+                            Text(movie?.title ?? "")
                                 .font(FontSize.title2Bold)
                                 .foregroundColor(AppColor.textPrimary)
                             
-                            Text("Science Fiction")
+                            Text(movie?.subtitle ?? "")
                                 .font(FontSize.captionSemibold)
                                 .foregroundColor(AppColor.textSecondary)
                             
-                            Text("Adventure beyond the known universe")
+                            Text(movie?.overview ?? "")
                                 .font(FontSize.caption)
                                 .foregroundColor(AppColor.textPrimary)
+                                .lineLimit(2)
                         }
                         
                         Spacer()
@@ -134,8 +175,42 @@ private struct DiscoverSection: View {
                 .stroke(AppColor.border, lineWidth: BorderSize.small)
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard let movie else {
+                return
+            }
+
+            onTap(movie)
+        }
         .frame(height: Constants.imageHeight)
         .padding(.horizontal, CustomSize.size20)
+    }
+
+    @ViewBuilder
+    private var backdropImage: some View {
+        if let backdropURL = movie?.backdropURL {
+            AsyncImage(url: backdropURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .failure, .empty:
+                    placeholderImage
+                @unknown default:
+                    placeholderImage
+                }
+            }
+        } else {
+            placeholderImage
+        }
+    }
+
+    private var placeholderImage: some View {
+        Image("the-last")
+            .resizable()
+            .scaledToFill()
     }
     
     private enum Constants {
@@ -162,9 +237,14 @@ private struct HeaderSection: View {
     
     var body: some View {
         HStack {
-            Text("MoviePulse")
-                .font(FontSize.largeTitleBold)
-                .foregroundColor(AppColor.textPrimary)
+            (
+                Text("Movie")
+                    .foregroundColor(AppColor.textPrimary)
+                +
+                Text("Pulse")
+                    .foregroundColor(AppColor.primary)
+            )
+            .font(FontSize.largeTitleBold)
             
             Spacer()
             
@@ -190,34 +270,33 @@ private struct HeaderSection: View {
     ScrollView {
         VStack(spacing: CustomSize.size0) {
             HeaderSection()
-            DiscoverSection()
-            MovieGenresSection(genres: HomeGenreItem.samples)
+            DiscoverSection(
+                movie: HomeMovieUIModel(
+                    id: 1,
+                    title: "The Last Horizon",
+                    subtitle: "Science Fiction",
+                    overview: "Adventure beyond the known universe",
+                    releaseDate: "2026-01-01",
+                    voteAverage: 8,
+                    imageURL: nil,
+                    backdropURL: nil
+                ),
+                onTap: { _ in }
+            )
+            MovieGenresSection(
+                genres: [
+                    HomeGenreSectionUIModel(
+                        id: 0,
+                        title: "Trending Now",
+                        movies: [
+                            HomeMovieUIModel(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
+                            HomeMovieUIModel(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
+                        ]
+                    )
+                ],
+                onMovieTap: { _ in }
+            )
         }
     }
     .background(AppColor.background.opacity(0.95))
-}
-
-private struct HomeGenreItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let movies: [HomeMovieItem]
-    
-    static let samples = [
-        HomeGenreItem(title: "Trending Now", movies: HomeMovieItem.samples),
-        HomeGenreItem(title: "Sci-Fi", movies: HomeMovieItem.samples),
-        HomeGenreItem(title: "Action", movies: HomeMovieItem.samples)
-    ]
-}
-
-private struct HomeMovieItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let imageURL: URL?
-    
-    static let samples = [
-        HomeMovieItem(title: "Orbital Drift", imageURL: nil),
-        HomeMovieItem(title: "The Aether Project", imageURL: nil),
-        HomeMovieItem(title: "Nova Fall", imageURL: nil),
-        HomeMovieItem(title: "Silent Galaxy", imageURL: nil)
-    ]
 }

@@ -6,5 +6,10 @@
 //
 
 enum HomeIntent {
-    case appear
+    case viewDidAppear
+    case selectGenre(id: Int)
+    case addMovieToMyList(MovieDomainModel)
+    case selectMovie(MovieDomainModel)
+    case selectProfile
+    case submitSearch(query: String)
 }
