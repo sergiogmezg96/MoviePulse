@@ -31,19 +31,6 @@ struct HomeMoviesMapper {
         }
     }
 
-    func mapFavoriteMovie(_ movie: MovieUIModel) -> FavoriteMovieDomainModel {
-        FavoriteMovieDomainModel(
-            id: movie.id,
-            title: movie.title,
-            subtitle: movie.subtitle,
-            overview: movie.overview,
-            releaseDate: movie.releaseDate,
-            voteAverage: movie.voteAverage,
-            imageURL: movie.imageURL,
-            backdropURL: movie.backdropURL
-        )
-    }
-
     private func uniqueGenreIds(from movies: [MovieDomainModel]) -> [Int] {
         movies.reduce(into: []) { genreIds, movie in
             movie.genreIds.forEach { genreId in

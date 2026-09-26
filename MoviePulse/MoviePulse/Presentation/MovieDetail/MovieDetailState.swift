@@ -15,9 +15,22 @@ enum MovieDetailStatus: Equatable {
 struct MovieDetailState: Equatable {
     let status: MovieDetailStatus
     let movie: MovieUIModel?
+    let isFavorite: Bool
+    let isInMyList: Bool
 
     static let initial = MovieDetailState(
         status: .idle,
-        movie: nil
+        movie: nil,
+        isFavorite: false,
+        isInMyList: false
     )
+
+    static func initial(movie: MovieUIModel) -> MovieDetailState {
+        MovieDetailState(
+            status: .idle,
+            movie: movie,
+            isFavorite: false,
+            isInMyList: false
+        )
+    }
 }

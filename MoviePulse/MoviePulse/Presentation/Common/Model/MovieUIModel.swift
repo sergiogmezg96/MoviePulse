@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieUIModel: Equatable, Hashable, Identifiable {
+struct MovieUIModel: Codable, Equatable, Hashable, Identifiable {
     let id: Int
     let title: String
     let subtitle: String

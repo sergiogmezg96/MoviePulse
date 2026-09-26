@@ -59,10 +59,12 @@ extension AppRootView {
                 switch route {
                 case .movieDetail(let movie):
                     MovieDetailView(
-                        movie: movie,
-                        onBackTap: {
-                            navigationPath.removeLast()
-                        }
+                        store: dependencyContainer.makeMovieDetailStore(
+                            movie: movie,
+                            onBackTap: {
+                                navigationPath.removeLast()
+                            }
+                        )
                     )
                         .toolbar(.hidden, for: .navigationBar)
                 }

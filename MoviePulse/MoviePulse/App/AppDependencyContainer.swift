@@ -24,14 +24,51 @@ final class AppDependencyContainer {
         SaveFavoriteMovieUseCase(repository: movieRepositoryImpl)
     }
 
+    func makeSaveMovieToMyListUseCase() -> SaveMovieToMyListUseCase {
+        SaveMovieToMyListUseCase(repository: movieRepositoryImpl)
+    }
+
+    func makeDeleteFavoriteMovieUseCase() -> DeleteFavoriteMovieUseCase {
+        DeleteFavoriteMovieUseCase(repository: movieRepositoryImpl)
+    }
+
+    func makeDeleteMovieFromMyListUseCase() -> DeleteMovieFromMyListUseCase {
+        DeleteMovieFromMyListUseCase(repository: movieRepositoryImpl)
+    }
+
+    func makeGetFavoriteMovieByIdUseCase() -> GetFavoriteMovieByIdUseCase {
+        GetFavoriteMovieByIdUseCase(repository: movieRepositoryImpl)
+    }
+
+    func makeGetMyListMovieByIdUseCase() -> GetMyListMovieByIdUseCase {
+        GetMyListMovieByIdUseCase(repository: movieRepositoryImpl)
+    }
+
     // MARK: Stores
     @MainActor
     func makeHomeStore() -> HomeStore {
         HomeStore(
             state: .initial,
             getMoviesUseCase: makeGetMoviesUseCase(),
-            saveFavoriteMovieUseCase: makeSaveFavoriteMovieUseCase(),
+            saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             moviesMapper: HomeMoviesMapper()
+        )
+    }
+
+    @MainActor
+    func makeMovieDetailStore(
+        movie: MovieUIModel,
+        onBackTap: @escaping () -> Void
+    ) -> MovieDetailStore {
+        MovieDetailStore(
+            state: .initial(movie: movie),
+            saveFavoriteMovieUseCase: makeSaveFavoriteMovieUseCase(),
+            deleteFavoriteMovieUseCase: makeDeleteFavoriteMovieUseCase(),
+            getFavoriteMovieByIdUseCase: makeGetFavoriteMovieByIdUseCase(),
+            saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
+            deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
+            getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
+            onBackTap: onBackTap
         )
     }
 }

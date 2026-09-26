@@ -8,8 +8,9 @@
 import Foundation
 
 enum MovieDetailIntent {
+    case viewDidAppear
     case rateMovie
-    case addToFavorites
-    case addToMyList
+    case toggleFavorite
+    case toggleMyList
     case goBack
 }

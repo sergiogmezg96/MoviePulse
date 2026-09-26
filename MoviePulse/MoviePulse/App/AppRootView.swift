@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AppRootView: View {
-    private let dependencyContainer: AppDependencyContainer
+    let dependencyContainer: AppDependencyContainer
 
     @State var homeStore: HomeStore
     @State var selectedTab: AppRootTab = .home

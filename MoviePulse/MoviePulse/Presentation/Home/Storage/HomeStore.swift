@@ -14,18 +14,18 @@ final class HomeStore {
     private(set) var state: HomeViewState
 
     private let getMoviesUseCase: GetMoviesUseCase
-    private let saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase
+    private let saveMovieToMyListUseCase: SaveMovieToMyListUseCase
     private let moviesMapper: HomeMoviesMapper
 
     init(
         state: HomeViewState,
         getMoviesUseCase: GetMoviesUseCase,
-        saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase,
+        saveMovieToMyListUseCase: SaveMovieToMyListUseCase,
         moviesMapper: HomeMoviesMapper
     ) {
         self.state = state
         self.getMoviesUseCase = getMoviesUseCase
-        self.saveFavoriteMovieUseCase = saveFavoriteMovieUseCase
+        self.saveMovieToMyListUseCase = saveMovieToMyListUseCase
         self.moviesMapper = moviesMapper
     }
 
@@ -37,7 +37,7 @@ final class HomeStore {
             //TODO: Do see genre movies.
             break
         case .addMovieToMyList(let movie):
-            saveFavoriteMovie(movie)
+            saveMovieToMyList(movie)
         case .selectMovie:
             //TODO: Do see movie details.
             break
@@ -90,10 +90,10 @@ final class HomeStore {
         }
     }
 
-    private func saveFavoriteMovie(_ movie: MovieUIModel) {
+    private func saveMovieToMyList(_ movie: MovieUIModel) {
         Task {
-            try? await saveFavoriteMovieUseCase.execute(
-                request: moviesMapper.mapFavoriteMovie(movie)
+            try? await saveMovieToMyListUseCase.execute(
+                request: movie
             )
         }
     }
