@@ -10,5 +10,5 @@ import Foundation
 struct HomeGenreSectionUIModel: Equatable, Identifiable {
     let id: Int
     let title: String
-    let movies: [HomeMovieUIModel]
+    let movies: [MovieUIModel]
 }

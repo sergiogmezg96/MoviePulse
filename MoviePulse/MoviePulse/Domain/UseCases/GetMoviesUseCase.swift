@@ -8,14 +8,14 @@
 import Foundation
 import MPLibrary
 
-public struct GetMoviesUseCase: MPUseCase {
+struct GetMoviesUseCase: MPUseCase {
     private let repository: MovieRepository
     
-    public init (repository: MovieRepository) {
+    init(repository: MovieRepository) {
         self.repository = repository
     }
     
-    public func execute(request: ()) async throws -> [MovieDomainModel] {
+    func execute(request: ()) async throws -> [MovieDomainModel] {
         try await repository.getMovies()
     }
 }

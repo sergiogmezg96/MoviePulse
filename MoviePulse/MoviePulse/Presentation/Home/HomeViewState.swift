@@ -16,7 +16,7 @@ enum HomeViewStatus: Equatable {
 
 struct HomeViewState: Equatable {
     let status: HomeViewStatus
-    let featuredMovie: HomeMovieUIModel?
+    let featuredMovie: MovieUIModel?
     let genreSections: [HomeGenreSectionUIModel]
 
     static let initial = HomeViewState(
