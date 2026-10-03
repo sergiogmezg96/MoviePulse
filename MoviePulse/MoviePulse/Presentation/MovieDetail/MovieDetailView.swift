@@ -21,13 +21,28 @@ struct MovieDetailView: View {
         ZStack(alignment: .top) {
             AppColor.background.opacity(0.95).ignoresSafeArea()
             
-            HeaderBackgroundImage(imageURL: store.state.movie?.backdropURL)
+            MPHeaderBackgroundImage(
+                config: MPHeaderBackgroundImageConfig(
+                    imageURL: store.state.movie?.backdropURL
+                )
+            )
                 .ignoresSafeArea(edges: .top)
                 .zIndex(0)
             
             VStack(spacing: CustomSize.size24) {
-                HeaderSection(store: store)
-                    .zIndex(1)
+                MPNavigationHeaderBar(
+                    config: MPNavigationHeaderBarConfig(
+                        trailingIconName: store.state.isFavorite ? "heart.fill" : "heart",
+                        trailingColor: Color.red,
+                        onLeadingTap: {
+                            store.process(.goBack)
+                        },
+                        onTrailingTap: {
+                            store.process(.toggleFavorite)
+                        }
+                    )
+                )
+                .zIndex(1)
                 
                 content
             }
@@ -186,128 +201,16 @@ private struct RatingView: View {
     }
 }
 
-private struct HeaderBackgroundImage: View {
-    let imageURL: URL?
-
-    var body: some View {
-        VStack(spacing: CustomSize.size0) {
-            RemoteMovieImage(imageURL: imageURL)
-                .frame(maxWidth: .infinity)
-                .frame(height: .headerBackgroundImageHeight)
-                .clipped()
-                .overlay {
-                    LinearGradient(
-                        colors: [
-                            .clear,
-                            AppColor.background.opacity(0.35),
-                            AppColor.background.opacity(0.95)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
-        }
-    }
-}
-
 private struct PosterImage: View {
     let imageURL: URL?
 
     var body: some View {
-        RemoteMovieImage(imageURL: imageURL)
-    }
-}
-
-private struct RemoteMovieImage: View {
-    let imageURL: URL?
-
-    var body: some View {
-        if let imageURL {
-            AsyncImage(url: imageURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                case .failure, .empty:
-                    placeholder
-                @unknown default:
-                    placeholder
-                }
-            }
-        } else {
-            placeholder
-        }
-    }
-
-    private var placeholder: some View {
-        Image("the-last")
-            .resizable()
-            .scaledToFill()
-    }
-}
-
-private struct HeaderSection: View {
-    let store: MovieDetailStore
-
-    var body: some View {
-        ZStack {
-            title
-            
-            HStack {
-                headerButton(
-                    iconName: "chevron.left",
-                    color: AppColor.textPrimary,
-                    action: {
-                        store.process(.goBack)
-                    }
-                )
-                
-                Spacer()
-                
-                headerButton(
-                    iconName: store.state.isFavorite ? "heart.fill" : "heart",
-                    color: Color.red,
-                    action: {
-                        store.process(.toggleFavorite)
-                    }
-                )
-            }
-        }
-        .padding(.horizontal, CustomSize.size24)
-        .padding(.bottom, CustomSize.size24)
-    }
-    
-    private var title: some View {
-        (
-            Text("Movie")
-                .foregroundColor(AppColor.textPrimary)
-            +
-            Text("Pulse")
-                .foregroundColor(AppColor.primary)
+        MPRemoteImage(
+            config: MPRemoteImageConfig(
+                imageURL: imageURL
+            )
         )
-        .font(FontSize.headlineBold)
     }
-    
-    private func headerButton(
-        iconName: String,
-        color: Color,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: iconName)
-                .font(FontSize.headline)
-                .foregroundColor(color)
-                .frame(width: CustomSize.size32, height: CustomSize.size32)
-                .background(AppColor.background.opacity(0.85))
-                .clipShape(Circle())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private extension CGFloat {
-    static let headerBackgroundImageHeight: CGFloat = 240
 }
 
 #Preview {
