@@ -9,6 +9,11 @@ import Foundation
 import Observation
 
 @MainActor
+protocol MovieDetailNavigation {
+    func goBack()
+}
+
+@MainActor
 @Observable
 final class MovieDetailStore {
     private(set) var state: MovieDetailState
@@ -19,7 +24,7 @@ final class MovieDetailStore {
     private let saveMovieToMyListUseCase: SaveMovieToMyListUseCase
     private let deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase
     private let getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase
-    private let onBackTap: () -> Void
+    private let navigation: MovieDetailNavigation
     
     init(
         state: MovieDetailState,
@@ -29,7 +34,7 @@ final class MovieDetailStore {
         saveMovieToMyListUseCase: SaveMovieToMyListUseCase,
         deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase,
         getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase,
-        onBackTap: @escaping () -> Void
+        navigation: MovieDetailNavigation
     ) {
         self.state = state
         self.saveFavoriteMovieUseCase = saveFavoriteMovieUseCase
@@ -38,7 +43,7 @@ final class MovieDetailStore {
         self.saveMovieToMyListUseCase = saveMovieToMyListUseCase
         self.deleteMovieFromMyListUseCase = deleteMovieFromMyListUseCase
         self.getMyListMovieByIdUseCase = getMyListMovieByIdUseCase
-        self.onBackTap = onBackTap
+        self.navigation = navigation
     }
     
     func process(_ intent: MovieDetailIntent) {
@@ -53,7 +58,7 @@ final class MovieDetailStore {
         case .toggleMyList:
             toggleMyList()
         case .goBack:
-            onBackTap()
+            navigation.goBack()
         }
     }
     

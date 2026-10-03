@@ -5,6 +5,8 @@
 //  Created by Sergio Gómez García on 22/09/2026.
 //
 
+import SwiftUI
+
 final class AppDependencyContainer {
     private let apiKey: String
     private lazy var movieRepositoryImpl: MovieRepositoryImpl = {
@@ -46,19 +48,22 @@ final class AppDependencyContainer {
 
     // MARK: Stores
     @MainActor
-    func makeHomeStore() -> HomeStore {
+    func makeHomeStore(
+        navigation: HomeCoordinatorNavigation
+    ) -> HomeStore {
         HomeStore(
             state: .initial,
             getMoviesUseCase: makeGetMoviesUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
-            moviesMapper: HomeMoviesMapper()
+            moviesMapper: HomeMoviesMapper(),
+            navigation: navigation
         )
     }
 
     @MainActor
     func makeMovieDetailStore(
         movie: MovieUIModel,
-        onBackTap: @escaping () -> Void
+        navigation: MovieDetailNavigation
     ) -> MovieDetailStore {
         MovieDetailStore(
             state: .initial(movie: movie),
@@ -68,7 +73,19 @@ final class AppDependencyContainer {
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
-            onBackTap: onBackTap
+            navigation: navigation
+        )
+    }
+
+    @MainActor
+    func makeHomeCoordinator(
+        delegate: HomeCoordinatorDelegate,
+        navigationPath: Binding<[AnyHashable]>
+    ) -> HomeCoordinator {
+        HomeCoordinator(
+            delegate: delegate,
+            navigationPath: navigationPath,
+            dependencyContainer: self
         )
     }
 }

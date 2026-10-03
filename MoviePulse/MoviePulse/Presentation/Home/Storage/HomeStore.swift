@@ -16,31 +16,32 @@ final class HomeStore {
     private let getMoviesUseCase: GetMoviesUseCase
     private let saveMovieToMyListUseCase: SaveMovieToMyListUseCase
     private let moviesMapper: HomeMoviesMapper
+    private let navigation: HomeCoordinatorNavigation
 
     init(
         state: HomeViewState,
         getMoviesUseCase: GetMoviesUseCase,
         saveMovieToMyListUseCase: SaveMovieToMyListUseCase,
-        moviesMapper: HomeMoviesMapper
+        moviesMapper: HomeMoviesMapper,
+        navigation: HomeCoordinatorNavigation
     ) {
         self.state = state
         self.getMoviesUseCase = getMoviesUseCase
         self.saveMovieToMyListUseCase = saveMovieToMyListUseCase
         self.moviesMapper = moviesMapper
+        self.navigation = navigation
     }
 
     func process(_ intent: HomeIntent) {
         switch intent {
         case .viewDidAppear:
             loadMovies()
-        case .selectGenre:
-            //TODO: Do see genre movies.
-            break
+        case .selectGenre(let genre):
+            navigation.openSeeGenre(genre: genre)
         case .addMovieToMyList(let movie):
             saveMovieToMyList(movie)
-        case .selectMovie:
-            //TODO: Do see movie details.
-            break
+        case .selectMovie(let movie):
+            navigation.openMovieDetail(movie: movie)
         case .selectProfile:
             //TODO: Do view profile.
             break

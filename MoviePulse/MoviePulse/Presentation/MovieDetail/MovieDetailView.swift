@@ -46,6 +46,7 @@ struct MovieDetailView: View {
                 
                 content
             }
+            .padding(.horizontal, CustomSize.size24)
         }
         .task {
             store.process(.viewDidAppear)
@@ -246,7 +247,12 @@ private struct PosterImage: View {
             getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(
                 repository: MovieRepositoryImpl(apiKey: "")
             ),
-            onBackTap: {}
+            navigation: PreviewMovieDetailNavigation()
         )
     )
+}
+
+@MainActor
+private final class PreviewMovieDetailNavigation: MovieDetailNavigation {
+    func goBack() {}
 }

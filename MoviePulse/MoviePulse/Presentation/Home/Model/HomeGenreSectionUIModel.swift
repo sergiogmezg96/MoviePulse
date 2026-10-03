@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct HomeGenreSectionUIModel: Equatable, Identifiable {
+struct HomeGenreSectionUIModel: Equatable, Hashable, Identifiable {
     let id: Int
     let title: String
     let movies: [MovieUIModel]

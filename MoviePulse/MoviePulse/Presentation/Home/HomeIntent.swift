@@ -7,7 +7,7 @@
 
 enum HomeIntent {
     case viewDidAppear
-    case selectGenre(id: Int)
+    case selectGenre(HomeGenreSectionUIModel)
     case addMovieToMyList(MovieUIModel)
     case selectMovie(MovieUIModel)
     case selectProfile

@@ -10,14 +10,11 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
-    let onMovieTap: (MovieUIModel) -> Void
     
     init(
-        store: HomeStore,
-        onMovieTap: @escaping (MovieUIModel) -> Void = { _ in }
+        store: HomeStore
     ) {
         self.store = store
-        self.onMovieTap = onMovieTap
     }
     
     var body: some View {
@@ -26,10 +23,7 @@ struct HomeView: View {
                 HeaderSection()
                 DiscoverSection(
                     movie: store.state.featuredMovie,
-                    onSeeDetailsTap: onMovieTap,
-                    onAddToMyListTap: { movie in
-                        store.process(.addMovieToMyList(movie))
-                    }
+                    store: store
                 )
                 content
             }
@@ -49,7 +43,7 @@ struct HomeView: View {
         case .loaded:
             MovieGenresSection(
                 genres: store.state.genreSections,
-                onMovieTap: onMovieTap
+                store: store
             )
         case .failed(let message):
             Text(message)
@@ -63,7 +57,7 @@ struct HomeView: View {
 
 private struct MovieGenresSection: View {
     let genres: [HomeGenreSectionUIModel]
-    let onMovieTap: (MovieUIModel) -> Void
+    let store: HomeStore
     
     var body: some View {
         LazyVStack(spacing: CustomSize.size8) {
@@ -75,9 +69,11 @@ private struct MovieGenresSection: View {
                         movies: genre.movies,
                         imageURL: { $0.imageURL },
                         movieTitle: { $0.title },
-                        onSeeAllTap: {},
+                        onSeeAllTap: {
+                            store.process(.selectGenre(genre))
+                        },
                         onMovieTap: { movie in
-                            onMovieTap(movie)
+                            store.process(.selectMovie(movie))
                         }
                     )
                 )
@@ -89,8 +85,7 @@ private struct MovieGenresSection: View {
 
 private struct DiscoverSection: View {
     let movie: MovieUIModel?
-    let onSeeDetailsTap: (MovieUIModel) -> Void
-    let onAddToMyListTap: (MovieUIModel) -> Void
+    let store: HomeStore
     
     var body: some View {
         GeometryReader { proxy in
@@ -146,7 +141,7 @@ private struct DiscoverSection: View {
                                         return
                                     }
 
-                                    onSeeDetailsTap(movie)
+                                    store.process(.selectMovie(movie))
                                 }
                             )
                         )
@@ -165,7 +160,7 @@ private struct DiscoverSection: View {
                                         return
                                     }
 
-                                    onAddToMyListTap(movie)
+                                    store.process(.addMovieToMyList(movie))
                                 }
                             )
                         )
@@ -197,7 +192,7 @@ private struct DiscoverSection: View {
                 return
             }
 
-            onSeeDetailsTap(movie)
+            store.process(.selectMovie(movie))
         }
         .frame(height: Constants.imageHeight)
         .padding(.horizontal, CustomSize.size20)
@@ -297,8 +292,13 @@ private struct HeaderSection: View {
                     imageURL: nil,
                     backdropURL: nil
                 ),
-                onSeeDetailsTap: { _ in },
-                onAddToMyListTap: { _ in }
+                store: HomeStore(
+                    state: .initial,
+                    getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    moviesMapper: HomeMoviesMapper(),
+                    navigation: PreviewHomeNavigation()
+                )
             )
             MovieGenresSection(
                 genres: [
@@ -311,9 +311,23 @@ private struct HeaderSection: View {
                         ]
                     )
                 ],
-                onMovieTap: { _ in }
+                store: HomeStore(
+                    state: .initial,
+                    getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    moviesMapper: HomeMoviesMapper(),
+                    navigation: PreviewHomeNavigation()
+                )
             )
         }
     }
     .background(AppColor.background.opacity(0.95))
+}
+
+@MainActor
+private final class PreviewHomeNavigation: HomeCoordinatorNavigation {
+    func openMovieDetail(movie: MovieUIModel) {}
+    func openSeeGenre(genre: HomeGenreSectionUIModel) {}
+    func closeHomeFlow() {}
+    func goBack() {}
 }
