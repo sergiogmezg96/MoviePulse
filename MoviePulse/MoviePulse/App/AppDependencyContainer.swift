@@ -46,6 +46,10 @@ final class AppDependencyContainer {
         GetMyListMovieByIdUseCase(repository: movieRepositoryImpl)
     }
 
+    func makeGetMyListMoviesUseCase() -> GetMyListMoviesUseCase {
+        GetMyListMoviesUseCase(repository: movieRepositoryImpl)
+    }
+
     // MARK: Stores
     @MainActor
     func makeHomeStore(
@@ -73,6 +77,17 @@ final class AppDependencyContainer {
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
+            navigation: navigation
+        )
+    }
+
+    @MainActor
+    func makeMyListStore(
+        navigation: MyListNavigation
+    ) -> MyListStore {
+        MyListStore(
+            state: .initial,
+            getMyListMoviesUseCase: makeGetMyListMoviesUseCase(),
             navigation: navigation
         )
     }

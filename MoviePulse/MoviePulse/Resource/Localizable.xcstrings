@@ -530,6 +530,22 @@
         }
       }
     },
+    "my_list_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your list is empty."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu lista está vacía."
+          }
+        }
+      }
+    },
     "genre_filter_movies" : {
       "localizations" : {
         "en" : {

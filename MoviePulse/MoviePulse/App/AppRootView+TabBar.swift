@@ -73,7 +73,9 @@ extension AppRootView {
         switch selectedTab {
         case .home:
             homeCoordinatorContent
-        case .browse, .myList, .downloads:
+        case .myList:
+            myListContent
+        case .browse, .downloads:
             EmptyTabView(title: selectedTab.title)
         }
     }
@@ -95,6 +97,38 @@ extension AppRootView {
                     )
                 }
         }
+    }
+
+    @ViewBuilder
+    private var myListContent: some View {
+        if let myListStore {
+            MyListView(store: myListStore)
+        } else {
+            ProgressView()
+                .onAppear {
+                    guard myListStore == nil else {
+                        return
+                    }
+
+                    let coordinator = makeHomeCoordinatorIfNeeded()
+                    myListStore = dependencyContainer.makeMyListStore(
+                        navigation: coordinator
+                    )
+                }
+        }
+    }
+
+    private func makeHomeCoordinatorIfNeeded() -> HomeCoordinator {
+        if let homeCoordinator {
+            return homeCoordinator
+        }
+
+        let coordinator = dependencyContainer.makeHomeCoordinator(
+            delegate: AppRootHomeCoordinatorDelegate(),
+            navigationPath: $navigationPath
+        )
+        homeCoordinator = coordinator
+        return coordinator
     }
     
     private var tabBarItems: [MPTabBarItemConfig] {
