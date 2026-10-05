@@ -153,14 +153,14 @@ private struct DiscoverSection: View {
                                 horizontalPadding: CustomSize.size16,
                                 verticalPadding: CustomSize.size10,
                                 font: FontSize.captionBold,
-                                iconName: "plus",
-                                text: "tab_my_list".localized,
+                                iconName: store.state.isFeaturedMovieInMyList ? "checkmark" : "plus",
+                                text: store.state.isFeaturedMovieInMyList ? "movie_detail_added_to_list".localized : "tab_my_list".localized,
                                 action: {
                                     guard let movie else {
                                         return
                                     }
 
-                                    store.process(.addMovieToMyList(movie))
+                                    store.process(.toggleFeaturedMovieInMyList(movie))
                                 }
                             )
                         )
@@ -259,6 +259,7 @@ private struct HeaderSection: View {
             
             Spacer()
             
+            /*
             HStack(spacing: CustomSize.size16) {
                 Image(systemName: "magnifyingglass")
                     .font(FontSize.title2)
@@ -270,6 +271,7 @@ private struct HeaderSection: View {
                     .frame(width: CustomSize.size40, height: CustomSize.size40)
                     .foregroundColor(AppColor.textSecondary)
             }
+            */
         }
         .padding(.top, CustomSize.size16)
         .padding(.horizontal, CustomSize.size24)
@@ -296,6 +298,8 @@ private struct HeaderSection: View {
                     state: .initial,
                     getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     moviesMapper: HomeMoviesMapper(),
                     navigation: PreviewHomeNavigation()
                 )
@@ -315,6 +319,8 @@ private struct HeaderSection: View {
                     state: .initial,
                     getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
+                    getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     moviesMapper: HomeMoviesMapper(),
                     navigation: PreviewHomeNavigation()
                 )

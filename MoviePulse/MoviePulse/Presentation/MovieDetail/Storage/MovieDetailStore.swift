@@ -50,9 +50,8 @@ final class MovieDetailStore {
         switch intent {
         case .viewDidAppear:
             loadView()
-        case .rateMovie:
-            //TODO: Do rate movie.
-            break
+        // case .rateMovie:
+        //     break
         case .toggleFavorite:
             toggleFavorite()
         case .toggleMyList:

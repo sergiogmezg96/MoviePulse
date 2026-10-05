@@ -17,11 +17,13 @@ enum HomeViewStatus: Equatable {
 struct HomeViewState: Equatable {
     let status: HomeViewStatus
     let featuredMovie: MovieUIModel?
+    let isFeaturedMovieInMyList: Bool
     let genreSections: [HomeGenreSectionUIModel]
 
     static let initial = HomeViewState(
         status: .idle,
         featuredMovie: nil,
+        isFeaturedMovieInMyList: false,
         genreSections: []
     )
 }

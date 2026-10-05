@@ -98,6 +98,7 @@ private  struct MovieInfoSection: View {
                         .foregroundColor(AppColor.textSecondary)
                     
                     HStack(spacing: CustomSize.size16) {
+                        /*
                         MPButton(
                             config: MPButtonConfig(
                                 style: .primary,
@@ -112,6 +113,7 @@ private  struct MovieInfoSection: View {
                                 }
                             )
                         )
+                        */
                         
                         MPButton(
                             config: MPButtonConfig(

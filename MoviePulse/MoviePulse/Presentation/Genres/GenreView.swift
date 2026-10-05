@@ -45,11 +45,11 @@ struct GenreView: View {
             VStack(spacing: CustomSize.size20) {
                 MPNavigationHeaderBar(
                     config: MPNavigationHeaderBarConfig(
-                        trailingIconName: "magnifyingglass",
+                        // trailingIconName: "magnifyingglass",
                         onLeadingTap: {
                             navigation.goBack()
-                        },
-                        onTrailingTap: {}
+                        }
+                        // onTrailingTap: {}
                     )
                 )
                 .zIndex(1)

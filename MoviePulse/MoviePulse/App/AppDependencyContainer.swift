@@ -59,6 +59,8 @@ final class AppDependencyContainer {
             state: .initial,
             getMoviesUseCase: makeGetMoviesUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
+            deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
+            getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
             moviesMapper: HomeMoviesMapper(),
             navigation: navigation
         )

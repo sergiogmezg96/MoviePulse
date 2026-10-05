@@ -132,7 +132,7 @@ extension AppRootView {
     }
     
     private var tabBarItems: [MPTabBarItemConfig] {
-        AppRootTab.allCases.map { tab in
+        availableTabs.map { tab in
             MPTabBarItemConfig(
                 title: tab.title,
                 icon: tab.icon,
@@ -142,6 +142,15 @@ extension AppRootView {
                 }
             )
         }
+    }
+
+    private var availableTabs: [AppRootTab] {
+        [
+            .home,
+            .myList
+            // .browse,
+            // .downloads
+        ]
     }
 }
 
