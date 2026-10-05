@@ -8,24 +8,24 @@
 import SwiftUI
 import MPLibrary
 
+@MainActor
+protocol GenreViewNavigation {
+    func openMovieDetail(movie: MovieUIModel)
+    func goBack()
+}
+
 struct GenreView: View {
     @State private var selectedFilter: GenreFilter = .movies
     
-    let imageURL: URL?
-    let imageName: String?
-    let onBackTap: () -> Void
-    let onSearchTap: () -> Void
+    let genre: HomeGenreSectionUIModel
+    let navigation: GenreViewNavigation
     
     init(
-        imageURL: URL? = nil,
-        imageName: String? = nil,
-        onBackTap: @escaping () -> Void = {},
-        onSearchTap: @escaping () -> Void = {}
+        genre: HomeGenreSectionUIModel,
+        navigation: GenreViewNavigation
     ) {
-        self.imageURL = imageURL
-        self.imageName = imageName
-        self.onBackTap = onBackTap
-        self.onSearchTap = onSearchTap
+        self.genre = genre
+        self.navigation = navigation
     }
     
     var body: some View {
@@ -34,8 +34,8 @@ struct GenreView: View {
             
             MPHeaderBackgroundImage(
                 config: MPHeaderBackgroundImageConfig(
-                    imageURL: imageURL,
-                    imageName: imageName,
+                    imageURL: genre.movies.first?.backdropURL,
+                    imageName: genre.movies.first?.backdropURL == nil ? "the-last" : nil,
                     contentMode: .fit
                 )
             )
@@ -45,9 +45,11 @@ struct GenreView: View {
             VStack(spacing: CustomSize.size20) {
                 MPNavigationHeaderBar(
                     config: MPNavigationHeaderBarConfig(
-                        trailingIconName: "magnifyingglass",
-                        onLeadingTap: onBackTap,
-                        onTrailingTap: onSearchTap
+                        // trailingIconName: "magnifyingglass",
+                        onLeadingTap: {
+                            navigation.goBack()
+                        }
+                        // onTrailingTap: {}
                     )
                 )
                 .zIndex(1)
@@ -55,7 +57,7 @@ struct GenreView: View {
                 
                 VStack(spacing: CustomSize.size6) {
                     HStack {
-                        Text("SCI-FI")
+                        Text(genre.title.uppercased())
                             .foregroundStyle(AppColor.textPrimary)
                             .font(FontSize.largeTitleBold)
                             .fixedSize()
@@ -63,7 +65,7 @@ struct GenreView: View {
                     }
                     
                     HStack {
-                        Text("18 películas")
+                        Text(moviesCountText)
                             .foregroundStyle(AppColor.textPrimary)
                             .font(FontSize.footnote)
                             .fixedSize()
@@ -95,14 +97,16 @@ struct GenreView: View {
                         ],
                         spacing: CustomSize.size24
                     ) {
-                        ForEach(PreviewGenreMovie.movies) { movie in
+                        ForEach(filteredMovies) { movie in
                             MPMovieGridItem(
                                 config: MPMovieGridItemConfig(
-                                    imageName: movie.imageName,
+                                    imageURL: movie.imageURL,
                                     title: movie.title,
                                     releaseDate: movie.releaseDate,
-                                    rating: movie.rating,
-                                    action: {}
+                                    rating: String(format: "%.1f", movie.voteAverage),
+                                    action: {
+                                        navigation.openMovieDetail(movie: movie)
+                                    }
                                 )
                             )
                         }
@@ -110,6 +114,26 @@ struct GenreView: View {
                     .padding(.horizontal, CustomSize.size8)
                 }
                 .scrollIndicators(.hidden)
+            }
+        }
+    }
+
+    private var moviesCountText: String {
+        let countKey = filteredMovies.count == 1 ? "genre_movie_count_singular" : "genre_movie_count_plural"
+        return "\(filteredMovies.count) \(countKey.localized)"
+    }
+
+    private var filteredMovies: [MovieUIModel] {
+        switch selectedFilter {
+        case .movies:
+            return genre.movies
+        case .topRated:
+            return genre.movies.sorted { lhs, rhs in
+                lhs.voteAverage > rhs.voteAverage
+            }
+        case .recentlyAdded:
+            return genre.movies.sorted { lhs, rhs in
+                lhs.releaseDate > rhs.releaseDate
             }
         }
     }
@@ -127,34 +151,31 @@ private enum GenreFilter: CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .movies:
-            return "Pelis"
+            return "genre_filter_movies".localized
         case .topRated:
-            return "Most Rated"
+            return "genre_filter_top_rated".localized
         case .recentlyAdded:
-            return "Recientes"
+            return "genre_filter_recently_added".localized
         }
     }
 }
 
-private struct PreviewGenreMovie: Identifiable {
-    let id = UUID()
-    let imageName: String
-    let title: String
-    let releaseDate: String
-    let rating: String
-    
-    static let movies = [
-        PreviewGenreMovie(imageName: "the-last", title: "Orbital Drift", releaseDate: "2024", rating: "8.7"),
-        PreviewGenreMovie(imageName: "the-last", title: "Nova Fall", releaseDate: "2024", rating: "8.7"),
-        PreviewGenreMovie(imageName: "the-last", title: "Echoes Beyond", releaseDate: "2023", rating: "8.8"),
-        PreviewGenreMovie(imageName: "the-last", title: "The Aether Project", releaseDate: "2024", rating: "9.1"),
-        PreviewGenreMovie(imageName: "the-last", title: "Chroma", releaseDate: "2024", rating: "8.7"),
-        PreviewGenreMovie(imageName: "the-last", title: "The Silent Skies", releaseDate: "2023", rating: "8.5"),
-        PreviewGenreMovie(imageName: "the-last", title: "The Black Tide", releaseDate: "2024", rating: "8.4"),
-        PreviewGenreMovie(imageName: "the-last", title: "The Last Horizon", releaseDate: "2026", rating: "9.8")
-    ]
+#Preview {
+    GenreView(
+        genre: HomeGenreSectionUIModel(
+            id: 1,
+            title: "Science Fiction",
+            movies: [
+                MovieUIModel(id: 1, title: "The Last Horizon", subtitle: "Science Fiction", overview: "", releaseDate: "2026-01-01", voteAverage: 8, imageURL: nil, backdropURL: nil),
+                MovieUIModel(id: 2, title: "Orbital Drift", subtitle: "Adventure", overview: "", releaseDate: "2026-01-02", voteAverage: 7, imageURL: nil, backdropURL: nil)
+            ]
+        ),
+        navigation: PreviewGenreNavigation()
+    )
 }
 
-#Preview {
-    GenreView(imageName: "the-last")
+@MainActor
+private final class PreviewGenreNavigation: GenreViewNavigation {
+    func openMovieDetail(movie: MovieUIModel) {}
+    func goBack() {}
 }

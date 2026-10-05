@@ -15,38 +15,43 @@ final class HomeStore {
 
     private let getMoviesUseCase: GetMoviesUseCase
     private let saveMovieToMyListUseCase: SaveMovieToMyListUseCase
+    private let deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase
+    private let getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase
     private let moviesMapper: HomeMoviesMapper
+    private let navigation: HomeCoordinatorNavigation
 
     init(
         state: HomeViewState,
         getMoviesUseCase: GetMoviesUseCase,
         saveMovieToMyListUseCase: SaveMovieToMyListUseCase,
-        moviesMapper: HomeMoviesMapper
+        deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase,
+        getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase,
+        moviesMapper: HomeMoviesMapper,
+        navigation: HomeCoordinatorNavigation
     ) {
         self.state = state
         self.getMoviesUseCase = getMoviesUseCase
         self.saveMovieToMyListUseCase = saveMovieToMyListUseCase
+        self.deleteMovieFromMyListUseCase = deleteMovieFromMyListUseCase
+        self.getMyListMovieByIdUseCase = getMyListMovieByIdUseCase
         self.moviesMapper = moviesMapper
+        self.navigation = navigation
     }
 
     func process(_ intent: HomeIntent) {
         switch intent {
         case .viewDidAppear:
             loadMovies()
-        case .selectGenre:
-            //TODO: Do see genre movies.
-            break
-        case .addMovieToMyList(let movie):
-            saveMovieToMyList(movie)
-        case .selectMovie:
-            //TODO: Do see movie details.
-            break
-        case .selectProfile:
-            //TODO: Do view profile.
-            break
-        case .submitSearch:
-            //TODO: Do search movie.
-            break
+        case .selectGenre(let genre):
+            navigation.openSeeGenre(genre: genre)
+        case .toggleFeaturedMovieInMyList(let movie):
+            toggleFeaturedMovieInMyList(movie)
+        case .selectMovie(let movie):
+            navigation.openMovieDetail(movie: movie)
+        // case .selectProfile:
+        //     break
+        // case .submitSearch:
+        //     break
         }
     }
 
@@ -58,6 +63,7 @@ final class HomeStore {
         state = HomeViewState(
             status: .loading,
             featuredMovie: state.featuredMovie,
+            isFeaturedMovieInMyList: state.isFeaturedMovieInMyList,
             genreSections: state.genreSections
         )
 
@@ -70,30 +76,65 @@ final class HomeStore {
                     state = HomeViewState(
                         status: .failed(message: "No hay peliculas disponibles."),
                         featuredMovie: nil,
+                        isFeaturedMovieInMyList: false,
                         genreSections: []
                     )
                     return
                 }
 
+                let featuredMovie = moviesMapper.mapFeaturedMovie(movies)
+                let myListMovie: MovieUIModel?
+                if let featuredMovie {
+                    myListMovie = try? await getMyListMovieByIdUseCase.execute(request: featuredMovie.id)
+                } else {
+                    myListMovie = nil
+                }
+
                 state = HomeViewState(
                     status: .loaded,
-                    featuredMovie: moviesMapper.mapFeaturedMovie(movies),
+                    featuredMovie: featuredMovie,
+                    isFeaturedMovieInMyList: myListMovie != nil,
                     genreSections: genreSections
                 )
             } catch {
                 state = HomeViewState(
                     status: .failed(message: ApiErrorMapping.message(for: error)),
                     featuredMovie: nil,
+                    isFeaturedMovieInMyList: false,
                     genreSections: []
                 )
             }
         }
     }
 
+    private func toggleFeaturedMovieInMyList(_ movie: MovieUIModel) {
+        state.isFeaturedMovieInMyList ? deleteMovieFromMyList(movie) : saveMovieToMyList(movie)
+    }
+
     private func saveMovieToMyList(_ movie: MovieUIModel) {
         Task {
             try? await saveMovieToMyListUseCase.execute(
                 request: movie
+            )
+
+            state = HomeViewState(
+                status: state.status,
+                featuredMovie: state.featuredMovie,
+                isFeaturedMovieInMyList: true,
+                genreSections: state.genreSections
+            )
+        }
+    }
+
+    private func deleteMovieFromMyList(_ movie: MovieUIModel) {
+        Task {
+            try? await deleteMovieFromMyListUseCase.execute(request: movie.id)
+
+            state = HomeViewState(
+                status: state.status,
+                featuredMovie: state.featuredMovie,
+                isFeaturedMovieInMyList: false,
+                genreSections: state.genreSections
             )
         }
     }

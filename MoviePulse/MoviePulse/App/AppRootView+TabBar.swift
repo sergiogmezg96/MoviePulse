@@ -55,18 +55,14 @@ extension AppRootView {
                 )
             }
             .background(AppColor.background.opacity(0.95))
-            .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .movieDetail(let movie):
-                    MovieDetailView(
-                        store: dependencyContainer.makeMovieDetailStore(
-                            movie: movie,
-                            onBackTap: {
-                                navigationPath.removeLast()
-                            }
-                        )
-                    )
-                        .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(for: AnyHashable.self) { hashable in
+                if let path = hashable as? HomeCoordinator.Path, let homeCoordinator {
+                    homeCoordinator.buildPathDestination(for: path)
+                } else {
+                    Text("")
+                        .onAppear {
+                            assertionFailure("Unexpected navigation destination received.")
+                        }
                 }
             }
         }
@@ -76,19 +72,67 @@ extension AppRootView {
     private var selectedTabContent: some View {
         switch selectedTab {
         case .home:
-            HomeView(
-                store: homeStore,
-                onMovieTap: { movie in
-                    navigationPath.append(AppRoute.movieDetail(movie))
-                }
-            )
-        case .browse, .myList, .downloads:
+            homeCoordinatorContent
+        case .myList:
+            myListContent
+        case .browse, .downloads:
             EmptyTabView(title: selectedTab.title)
         }
     }
+
+    @ViewBuilder
+    private var homeCoordinatorContent: some View {
+        if let homeCoordinator {
+            homeCoordinator.mainView
+        } else {
+            ProgressView()
+                .onAppear {
+                    guard homeCoordinator == nil else {
+                        return
+                    }
+
+                    homeCoordinator = dependencyContainer.makeHomeCoordinator(
+                        delegate: AppRootHomeCoordinatorDelegate(),
+                        navigationPath: $navigationPath
+                    )
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var myListContent: some View {
+        if let myListStore {
+            MyListView(store: myListStore)
+        } else {
+            ProgressView()
+                .onAppear {
+                    guard myListStore == nil else {
+                        return
+                    }
+
+                    let coordinator = makeHomeCoordinatorIfNeeded()
+                    myListStore = dependencyContainer.makeMyListStore(
+                        navigation: coordinator
+                    )
+                }
+        }
+    }
+
+    private func makeHomeCoordinatorIfNeeded() -> HomeCoordinator {
+        if let homeCoordinator {
+            return homeCoordinator
+        }
+
+        let coordinator = dependencyContainer.makeHomeCoordinator(
+            delegate: AppRootHomeCoordinatorDelegate(),
+            navigationPath: $navigationPath
+        )
+        homeCoordinator = coordinator
+        return coordinator
+    }
     
     private var tabBarItems: [MPTabBarItemConfig] {
-        AppRootTab.allCases.map { tab in
+        availableTabs.map { tab in
             MPTabBarItemConfig(
                 title: tab.title,
                 icon: tab.icon,
@@ -98,6 +142,15 @@ extension AppRootView {
                 }
             )
         }
+    }
+
+    private var availableTabs: [AppRootTab] {
+        [
+            .home,
+            .myList
+            // .browse,
+            // .downloads
+        ]
     }
 }
 
@@ -117,4 +170,9 @@ private struct EmptyTabView: View {
         .frame(maxWidth: .infinity)
         .background(AppColor.background.opacity(0.95))
     }
+}
+
+@MainActor
+private final class AppRootHomeCoordinatorDelegate: HomeCoordinatorDelegate {
+    func finishHomeFlow() {}
 }

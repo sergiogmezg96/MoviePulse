@@ -46,6 +46,7 @@ struct MovieDetailView: View {
                 
                 content
             }
+            .padding(.horizontal, CustomSize.size24)
         }
         .task {
             store.process(.viewDidAppear)
@@ -97,6 +98,7 @@ private  struct MovieInfoSection: View {
                         .foregroundColor(AppColor.textSecondary)
                     
                     HStack(spacing: CustomSize.size16) {
+                        /*
                         MPButton(
                             config: MPButtonConfig(
                                 style: .primary,
@@ -111,6 +113,7 @@ private  struct MovieInfoSection: View {
                                 }
                             )
                         )
+                        */
                         
                         MPButton(
                             config: MPButtonConfig(
@@ -246,7 +249,12 @@ private struct PosterImage: View {
             getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(
                 repository: MovieRepositoryImpl(apiKey: "")
             ),
-            onBackTap: {}
+            navigation: PreviewMovieDetailNavigation()
         )
     )
+}
+
+@MainActor
+private final class PreviewMovieDetailNavigation: MovieDetailNavigation {
+    func goBack() {}
 }

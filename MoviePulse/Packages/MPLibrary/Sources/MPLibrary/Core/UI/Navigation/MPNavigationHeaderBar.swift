@@ -15,7 +15,7 @@ public struct MPNavigationHeaderBarConfig {
     let titleFont: Font
     let leadingIconName: String
     let leadingColor: Color
-    let trailingIconName: String
+    let trailingIconName: String?
     let trailingColor: Color
     let buttonSize: CGFloat
     let buttonBackgroundColor: Color
@@ -32,14 +32,14 @@ public struct MPNavigationHeaderBarConfig {
         titleFont: Font = FontSize.headlineBold,
         leadingIconName: String = "chevron.left",
         leadingColor: Color = AppColor.textPrimary,
-        trailingIconName: String,
+        trailingIconName: String? = nil,
         trailingColor: Color = AppColor.textPrimary,
         buttonSize: CGFloat = CustomSize.size32,
         buttonBackgroundColor: Color = AppColor.background.opacity(0.85),
         horizontalPadding: CGFloat = CustomSize.size24,
         bottomPadding: CGFloat = CustomSize.size24,
         onLeadingTap: @escaping () -> Void,
-        onTrailingTap: @escaping () -> Void
+        onTrailingTap: @escaping () -> Void = {}
     ) {
         self.titlePrefix = titlePrefix
         self.titleSuffix = titleSuffix
@@ -79,11 +79,13 @@ public struct MPNavigationHeaderBar: View {
 
                 Spacer()
 
-                headerButton(
-                    iconName: config.trailingIconName,
-                    color: config.trailingColor,
-                    action: config.onTrailingTap
-                )
+                if let trailingIconName = config.trailingIconName {
+                    headerButton(
+                        iconName: trailingIconName,
+                        color: config.trailingColor,
+                        action: config.onTrailingTap
+                    )
+                }
             }
         }
         .padding(.horizontal, config.horizontalPadding)
