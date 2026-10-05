@@ -8,6 +8,8 @@
 import Foundation
 
 public enum Constants {
+    public static let appVersion = "1.0.1"
+
     public enum HomeMoviesConstants {
         public static let posterBaseURL = "https://image.tmdb.org/t/p/w500"
         public static let backdropBaseURL = "https://image.tmdb.org/t/p/w780"
