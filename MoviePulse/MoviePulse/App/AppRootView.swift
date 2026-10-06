@@ -13,7 +13,7 @@ struct AppRootView: View {
     @State var selectedTab: AppRootTab = .home
     @State var navigationPath = [AnyHashable]()
     @State var homeCoordinator: HomeCoordinator?
-    @State var myListStore: MyListStore?
+    @State var myListCoordinator: MyListCoordinator?
 
     init(dependencyContainer: AppDependencyContainer = AppDependencyContainer()) {
         self.dependencyContainer = dependencyContainer

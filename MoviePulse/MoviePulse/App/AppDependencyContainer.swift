@@ -105,4 +105,16 @@ final class AppDependencyContainer {
             dependencyContainer: self
         )
     }
+
+    @MainActor
+    func makeMyListCoordinator(
+        delegate: MyListCoordinatorDelegate,
+        navigationPath: Binding<[AnyHashable]>
+    ) -> MyListCoordinator {
+        MyListCoordinator(
+            delegate: delegate,
+            navigationPath: navigationPath,
+            dependencyContainer: self
+        )
+    }
 }
