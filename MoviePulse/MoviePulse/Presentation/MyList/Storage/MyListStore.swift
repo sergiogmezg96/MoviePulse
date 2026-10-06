@@ -18,16 +18,22 @@ protocol MyListNavigation {
 final class MyListStore {
     private(set) var state: MyListState
 
+    private let getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase
     private let getMyListMoviesUseCase: GetMyListMoviesUseCase
+    private let favoritesMapper: MyListFavoritesMapper
     private let navigation: MyListNavigation
 
     init(
         state: MyListState,
+        getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
         getMyListMoviesUseCase: GetMyListMoviesUseCase,
+        favoritesMapper: MyListFavoritesMapper,
         navigation: MyListNavigation
     ) {
         self.state = state
+        self.getFavoriteMoviesUseCase = getFavoriteMoviesUseCase
         self.getMyListMoviesUseCase = getMyListMoviesUseCase
+        self.favoritesMapper = favoritesMapper
         self.navigation = navigation
     }
 
@@ -43,19 +49,24 @@ final class MyListStore {
     private func loadMovies() {
         state = MyListState(
             status: .loading,
+            favoriteMovies: state.favoriteMovies,
             movies: state.movies
         )
 
         Task {
             do {
-                let movies = try await getMyListMoviesUseCase.execute(request: ())
+                async let favoriteMovies = getFavoriteMoviesUseCase.execute(request: ())
+                async let movies = getMyListMoviesUseCase.execute(request: ())
+
                 state = MyListState(
                     status: .loaded,
-                    movies: movies
+                    favoriteMovies: favoritesMapper.map(try await favoriteMovies),
+                    movies: try await movies
                 )
             } catch {
                 state = MyListState(
                     status: .failed(message: ApiErrorMapping.message(for: error)),
+                    favoriteMovies: [],
                     movies: []
                 )
             }

@@ -75,10 +75,10 @@ struct MyListView: View {
             ProgressView()
                 .padding(.top, CustomSize.size24)
         case .loaded:
-            if filteredMovies.isEmpty {
+            if filteredFavoriteMovies.isEmpty && filteredMyListMovies.isEmpty {
                 emptyView
             } else {
-                moviesGrid
+                movieRows
             }
         case .failed(let message):
             Text(message)
@@ -89,30 +89,40 @@ struct MyListView: View {
         }
     }
 
-    private var moviesGrid: some View {
+    private var movieRows: some View {
         ScrollView {
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(), spacing: CustomSize.size4),
-                    GridItem(.flexible(), spacing: CustomSize.size4)
-                ],
-                spacing: CustomSize.size24
-            ) {
-                ForEach(filteredMovies) { movie in
-                    MPMovieGridItem(
-                        config: MPMovieGridItemConfig(
-                            imageURL: movie.imageURL,
-                            title: movie.title,
-                            releaseDate: movie.releaseDate,
-                            rating: String(format: "%.1f", movie.voteAverage),
-                            action: {
-                                store.process(.selectMovie(movie))
-                            }
-                        )
+            LazyVStack(spacing: CustomSize.size8) {
+                MovieGenreListItem(
+                    config: MovieGenreListItemConfig(
+                        genreTitle: "my_list_favorites_title".localized,
+                        subtitle: "",
+                        movies: filteredFavoriteMovies,
+                        imageURL: { $0.imageURL },
+                        movieTitle: { $0.title },
+                        showsSeeAllButton: false,
+                        onSeeAllTap: {},
+                        onMovieTap: { movie in
+                            store.process(.selectMovie(movie))
+                        }
                     )
-                }
+                )
+
+                MovieGenreListItem(
+                    config: MovieGenreListItemConfig(
+                        genreTitle: "tab_my_list".localized,
+                        subtitle: "",
+                        movies: filteredMyListMovies,
+                        imageURL: { $0.imageURL },
+                        movieTitle: { $0.title },
+                        showsSeeAllButton: false,
+                        onSeeAllTap: {},
+                        onMovieTap: { movie in
+                            store.process(.selectMovie(movie))
+                        }
+                    )
+                )
             }
-            .padding(.horizontal, CustomSize.size8)
+            .padding(.horizontal, CustomSize.size24)
         }
         .scrollIndicators(.hidden)
     }
@@ -126,20 +136,29 @@ struct MyListView: View {
     }
 
     private var moviesCountText: String {
-        let countKey = filteredMovies.count == 1 ? "genre_movie_count_singular" : "genre_movie_count_plural"
-        return "\(filteredMovies.count) \(countKey.localized)"
+        let totalMoviesCount = filteredFavoriteMovies.count + filteredMyListMovies.count
+        let countKey = totalMoviesCount == 1 ? "genre_movie_count_singular" : "genre_movie_count_plural"
+        return "\(totalMoviesCount) \(countKey.localized)"
     }
 
-    private var filteredMovies: [MovieUIModel] {
+    private var filteredFavoriteMovies: [MovieUIModel] {
+        filteredMovies(store.state.favoriteMovies)
+    }
+
+    private var filteredMyListMovies: [MovieUIModel] {
+        filteredMovies(store.state.movies)
+    }
+
+    private func filteredMovies(_ movies: [MovieUIModel]) -> [MovieUIModel] {
         switch selectedFilter {
         case .movies:
-            return store.state.movies
+            return movies
         case .topRated:
-            return store.state.movies.sorted { lhs, rhs in
+            return movies.sorted { lhs, rhs in
                 lhs.voteAverage > rhs.voteAverage
             }
         case .recentlyAdded:
-            return store.state.movies.sorted { lhs, rhs in
+            return movies.sorted { lhs, rhs in
                 lhs.releaseDate > rhs.releaseDate
             }
         }
