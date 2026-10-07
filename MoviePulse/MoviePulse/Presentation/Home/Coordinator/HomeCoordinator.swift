@@ -57,7 +57,7 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: HomeCoordinatorNavigation, GenreViewNavigation, MovieDetailNavigation, MyListNavigation {
+extension HomeCoordinator: HomeCoordinatorNavigation, GenreViewNavigation, MovieDetailNavigation {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }

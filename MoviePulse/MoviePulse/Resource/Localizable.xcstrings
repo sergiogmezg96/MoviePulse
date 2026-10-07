@@ -546,6 +546,22 @@
         }
       }
     },
+    "my_list_favorites_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorites"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos"
+          }
+        }
+      }
+    },
     "genre_filter_movies" : {
       "localizations" : {
         "en" : {

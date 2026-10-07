@@ -42,6 +42,10 @@ final class AppDependencyContainer {
         GetFavoriteMovieByIdUseCase(repository: movieRepositoryImpl)
     }
 
+    func makeGetFavoriteMoviesUseCase() -> GetFavoriteMoviesUseCase {
+        GetFavoriteMoviesUseCase(repository: movieRepositoryImpl)
+    }
+
     func makeGetMyListMovieByIdUseCase() -> GetMyListMovieByIdUseCase {
         GetMyListMovieByIdUseCase(repository: movieRepositoryImpl)
     }
@@ -89,7 +93,9 @@ final class AppDependencyContainer {
     ) -> MyListStore {
         MyListStore(
             state: .initial,
+            getFavoriteMoviesUseCase: makeGetFavoriteMoviesUseCase(),
             getMyListMoviesUseCase: makeGetMyListMoviesUseCase(),
+            favoritesMapper: MyListFavoritesMapper(),
             navigation: navigation
         )
     }
@@ -100,6 +106,18 @@ final class AppDependencyContainer {
         navigationPath: Binding<[AnyHashable]>
     ) -> HomeCoordinator {
         HomeCoordinator(
+            delegate: delegate,
+            navigationPath: navigationPath,
+            dependencyContainer: self
+        )
+    }
+
+    @MainActor
+    func makeMyListCoordinator(
+        delegate: MyListCoordinatorDelegate,
+        navigationPath: Binding<[AnyHashable]>
+    ) -> MyListCoordinator {
+        MyListCoordinator(
             delegate: delegate,
             navigationPath: navigationPath,
             dependencyContainer: self

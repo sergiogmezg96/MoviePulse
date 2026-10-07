@@ -14,6 +14,7 @@ public struct MovieGenreListItemConfig<T: Identifiable> {
     let movies: [T]
     let imageURL: (T) -> URL?
     let movieTitle: (T) -> String
+    let showsSeeAllButton: Bool
     let onSeeAllTap: () -> Void
     let onMovieTap: (T) -> Void
     
@@ -24,6 +25,7 @@ public struct MovieGenreListItemConfig<T: Identifiable> {
         movies: [T],
         imageURL: @escaping (T) -> URL?,
         movieTitle: @escaping (T) -> String,
+        showsSeeAllButton: Bool = true,
         onSeeAllTap: @escaping () -> Void,
         onMovieTap: @escaping (T) -> Void
     ) {
@@ -33,6 +35,7 @@ public struct MovieGenreListItemConfig<T: Identifiable> {
         self.movies = movies
         self.imageURL = imageURL
         self.movieTitle = movieTitle
+        self.showsSeeAllButton = showsSeeAllButton
         self.onSeeAllTap = onSeeAllTap
         self.onMovieTap = onMovieTap
     }
@@ -54,20 +57,22 @@ public struct MovieGenreListItem<T: Identifiable>: View {
                 
                 Spacer()
                 
-                Button(action: config.onSeeAllTap) {
-                    HStack(spacing: CustomSize.size8) {
-                        Text(config.subtitle)
-                            .font(FontSize.subheadline)
-                        
-                        Image(systemName: config.subtitleIconName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: CustomSize.size10, height: CustomSize.size10)
+                if config.showsSeeAllButton {
+                    Button(action: config.onSeeAllTap) {
+                        HStack(spacing: CustomSize.size8) {
+                            Text(config.subtitle)
+                                .font(FontSize.subheadline)
+
+                            Image(systemName: config.subtitleIconName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: CustomSize.size10, height: CustomSize.size10)
+                        }
+                        .foregroundColor(AppColor.textSecondary)
+                        .padding(.horizontal, CustomSize.size4)
                     }
-                    .foregroundColor(AppColor.textSecondary)
-                    .padding(.horizontal, CustomSize.size4)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
             
             ScrollView(.horizontal, showsIndicators: false) {

@@ -14,10 +14,12 @@ enum MyListStatus: Equatable {
 
 struct MyListState: Equatable {
     let status: MyListStatus
+    let favoriteMovies: [MovieUIModel]
     let movies: [MovieUIModel]
 
     static let initial = MyListState(
         status: .idle,
+        favoriteMovies: [],
         movies: []
     )
 }

@@ -58,6 +58,8 @@ extension AppRootView {
             .navigationDestination(for: AnyHashable.self) { hashable in
                 if let path = hashable as? HomeCoordinator.Path, let homeCoordinator {
                     homeCoordinator.buildPathDestination(for: path)
+                } else if let path = hashable as? MyListCoordinator.Path, let myListCoordinator {
+                    myListCoordinator.buildPathDestination(for: path)
                 } else {
                     Text("")
                         .onAppear {
@@ -101,34 +103,21 @@ extension AppRootView {
 
     @ViewBuilder
     private var myListContent: some View {
-        if let myListStore {
-            MyListView(store: myListStore)
+        if let myListCoordinator {
+            myListCoordinator.mainView
         } else {
             ProgressView()
                 .onAppear {
-                    guard myListStore == nil else {
+                    guard myListCoordinator == nil else {
                         return
                     }
 
-                    let coordinator = makeHomeCoordinatorIfNeeded()
-                    myListStore = dependencyContainer.makeMyListStore(
-                        navigation: coordinator
+                    myListCoordinator = dependencyContainer.makeMyListCoordinator(
+                        delegate: AppRootMyListCoordinatorDelegate(),
+                        navigationPath: $navigationPath
                     )
                 }
         }
-    }
-
-    private func makeHomeCoordinatorIfNeeded() -> HomeCoordinator {
-        if let homeCoordinator {
-            return homeCoordinator
-        }
-
-        let coordinator = dependencyContainer.makeHomeCoordinator(
-            delegate: AppRootHomeCoordinatorDelegate(),
-            navigationPath: $navigationPath
-        )
-        homeCoordinator = coordinator
-        return coordinator
     }
     
     private var tabBarItems: [MPTabBarItemConfig] {
@@ -175,4 +164,9 @@ private struct EmptyTabView: View {
 @MainActor
 private final class AppRootHomeCoordinatorDelegate: HomeCoordinatorDelegate {
     func finishHomeFlow() {}
+}
+
+@MainActor
+private final class AppRootMyListCoordinatorDelegate: MyListCoordinatorDelegate {
+    func finishMyListFlow() {}
 }
