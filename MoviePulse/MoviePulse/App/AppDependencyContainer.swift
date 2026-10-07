@@ -100,6 +100,7 @@ final class AppDependencyContainer {
         )
     }
 
+    // MARK: Coordinators
     @MainActor
     func makeHomeCoordinator(
         delegate: HomeCoordinatorDelegate,

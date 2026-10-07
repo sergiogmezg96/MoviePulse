@@ -8,16 +8,7 @@
 import SwiftUI
 
 struct AppRootView: View {
-    let dependencyContainer: AppDependencyContainer
-
-    @State var selectedTab: AppRootTab = .home
-    @State var navigationPath = [AnyHashable]()
-    @State var homeCoordinator: HomeCoordinator?
-    @State var myListCoordinator: MyListCoordinator?
-
-    init(dependencyContainer: AppDependencyContainer = AppDependencyContainer()) {
-        self.dependencyContainer = dependencyContainer
-    }
+    @ObservedObject var appCoordinator: AppCoordinator
 
     var body: some View {
         rootContent
@@ -25,5 +16,9 @@ struct AppRootView: View {
 }
 
 #Preview {
-    AppRootView()
+    AppRootView(
+        appCoordinator: AppCoordinator(
+            dependencyContainer: AppDependencyContainer()
+        )
+    )
 }

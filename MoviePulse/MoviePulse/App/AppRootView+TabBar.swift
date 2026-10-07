@@ -8,43 +8,10 @@
 import SwiftUI
 import MPLibrary
 
-enum AppRootTab: CaseIterable {
-    case home
-    case browse
-    case myList
-    case downloads
-    
-    var title: String {
-        switch self {
-        case .home:
-            return String(localized: "tab_home")
-        case .browse:
-            return String(localized: "tab_browse")
-        case .myList:
-            return String(localized: "tab_my_list")
-        case .downloads:
-            return String(localized: "tab_downloads")
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .home:
-            return "house.fill"
-        case .browse:
-            return "movieclapper"
-        case .myList:
-            return "tv"
-        case .downloads:
-            return "arrow.down.to.line"
-        }
-    }
-}
-
 extension AppRootView {
     
     var rootContent: some View {
-        NavigationStack(path: $navigationPath) {
+        NavigationStack(path: appCoordinator.navigationBinding) {
             VStack(spacing: CustomSize.size0) {
                 selectedTabContent
                 
@@ -56,10 +23,10 @@ extension AppRootView {
             }
             .background(AppColor.background.opacity(0.95))
             .navigationDestination(for: AnyHashable.self) { hashable in
-                if let path = hashable as? HomeCoordinator.Path, let homeCoordinator {
-                    homeCoordinator.buildPathDestination(for: path)
-                } else if let path = hashable as? MyListCoordinator.Path, let myListCoordinator {
-                    myListCoordinator.buildPathDestination(for: path)
+                if let path = hashable as? HomeCoordinator.Path {
+                    appCoordinator.homeCoordinator.buildPathDestination(for: path)
+                } else if let path = hashable as? MyListCoordinator.Path {
+                    appCoordinator.myListCoordinator.buildPathDestination(for: path)
                 } else {
                     Text("")
                         .onAppear {
@@ -72,75 +39,39 @@ extension AppRootView {
     
     @ViewBuilder
     private var selectedTabContent: some View {
-        switch selectedTab {
+        switch appCoordinator.selectedTab {
         case .home:
             homeCoordinatorContent
         case .myList:
             myListContent
         case .browse, .downloads:
-            EmptyTabView(title: selectedTab.title)
+            EmptyTabView(title: appCoordinator.selectedTab.title)
         }
     }
 
     @ViewBuilder
     private var homeCoordinatorContent: some View {
-        if let homeCoordinator {
-            homeCoordinator.mainView
-        } else {
-            ProgressView()
-                .onAppear {
-                    guard homeCoordinator == nil else {
-                        return
-                    }
-
-                    homeCoordinator = dependencyContainer.makeHomeCoordinator(
-                        delegate: AppRootHomeCoordinatorDelegate(),
-                        navigationPath: $navigationPath
-                    )
-                }
-        }
+        appCoordinator.homeCoordinator.mainView
     }
 
     @ViewBuilder
     private var myListContent: some View {
-        if let myListCoordinator {
-            myListCoordinator.mainView
-        } else {
-            ProgressView()
-                .onAppear {
-                    guard myListCoordinator == nil else {
-                        return
-                    }
-
-                    myListCoordinator = dependencyContainer.makeMyListCoordinator(
-                        delegate: AppRootMyListCoordinatorDelegate(),
-                        navigationPath: $navigationPath
-                    )
-                }
-        }
+        appCoordinator.myListCoordinator.mainView
     }
     
     private var tabBarItems: [MPTabBarItemConfig] {
-        availableTabs.map { tab in
+        appCoordinator.availableTabs.map { tab in
             MPTabBarItemConfig(
                 title: tab.title,
                 icon: tab.icon,
-                isSelected: selectedTab == tab,
+                isSelected: appCoordinator.selectedTab == tab,
                 onTap: {
-                    selectedTab = tab
+                    appCoordinator.selectedTab = tab
                 }
             )
         }
     }
 
-    private var availableTabs: [AppRootTab] {
-        [
-            .home,
-            .myList
-            // .browse,
-            // .downloads
-        ]
-    }
 }
 
 private struct EmptyTabView: View {
@@ -159,14 +90,4 @@ private struct EmptyTabView: View {
         .frame(maxWidth: .infinity)
         .background(AppColor.background.opacity(0.95))
     }
-}
-
-@MainActor
-private final class AppRootHomeCoordinatorDelegate: HomeCoordinatorDelegate {
-    func finishHomeFlow() {}
-}
-
-@MainActor
-private final class AppRootMyListCoordinatorDelegate: MyListCoordinatorDelegate {
-    func finishMyListFlow() {}
 }

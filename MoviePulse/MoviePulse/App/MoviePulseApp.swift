@@ -9,9 +9,18 @@ import SwiftUI
 
 @main
 struct MoviePulseApp: App {
+    @StateObject private var appCoordinator: AppCoordinator
+
+    init() {
+        let dependencyContainer = AppDependencyContainer()
+        _appCoordinator = StateObject(
+            wrappedValue: AppCoordinator(dependencyContainer: dependencyContainer)
+        )
+    }
+
     var body: some Scene {
         WindowGroup {
-            AppRootView()
+            AppRootView(appCoordinator: appCoordinator)
         }
     }
 }
