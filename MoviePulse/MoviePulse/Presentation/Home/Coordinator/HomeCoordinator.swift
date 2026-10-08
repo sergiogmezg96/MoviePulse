@@ -14,14 +14,6 @@ public protocol HomeCoordinatorDelegate {
 }
 
 @MainActor
-protocol HomeCoordinatorNavigation {
-    func openMovieDetail(movie: MovieUIModel)
-    func openSeeGenre(genre: HomeGenreSectionUIModel)
-    func closeHomeFlow()
-    func goBack()
-}
-
-@MainActor
 public final class HomeCoordinator {
     @Binding private var navigationPath: [AnyHashable]
     private let delegate: HomeCoordinatorDelegate
@@ -57,13 +49,22 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: HomeCoordinatorNavigation, GenreViewNavigation, MovieDetailNavigation {
+extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffectHandling {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
     
     func openSeeGenre(genre: HomeGenreSectionUIModel) {
         navigationPath.append(Path.genre(genre))
+    }
+
+    func handle(_ effect: HomeEffect) {
+        switch effect {
+        case .openMovieDetail(let movie):
+            openMovieDetail(movie: movie)
+        case .openGenre(let genre):
+            openSeeGenre(genre: genre)
+        }
     }
 
     func closeHomeFlow() {
@@ -114,7 +115,7 @@ extension HomeCoordinator {
             return cached
         }
 
-        let newStore = dependencyContainer.makeHomeStore(navigation: self)
+        let newStore = dependencyContainer.makeHomeStore(effectHandler: self)
         homeStore = newStore
         return newStore
     }

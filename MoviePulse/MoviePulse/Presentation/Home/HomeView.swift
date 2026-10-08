@@ -34,6 +34,7 @@ struct HomeView: View {
         }
     }
 
+
     @ViewBuilder
     private var content: some View {
         switch store.state.status {
@@ -296,12 +297,12 @@ private struct HeaderSection: View {
                 ),
                 store: HomeStore(
                     state: .initial,
+                    effectHandler: PreviewHomeEffectHandler(),
                     getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(repository: MovieRepositoryImpl(apiKey: "")),
-                    moviesMapper: HomeMoviesMapper(),
-                    navigation: PreviewHomeNavigation()
+                    moviesMapper: HomeMoviesMapper()
                 )
             )
             MovieGenresSection(
@@ -317,12 +318,12 @@ private struct HeaderSection: View {
                 ],
                 store: HomeStore(
                     state: .initial,
+                    effectHandler: PreviewHomeEffectHandler(),
                     getMoviesUseCase: GetMoviesUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     saveMovieToMyListUseCase: SaveMovieToMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase(repository: MovieRepositoryImpl(apiKey: "")),
                     getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(repository: MovieRepositoryImpl(apiKey: "")),
-                    moviesMapper: HomeMoviesMapper(),
-                    navigation: PreviewHomeNavigation()
+                    moviesMapper: HomeMoviesMapper()
                 )
             )
         }
@@ -331,9 +332,6 @@ private struct HeaderSection: View {
 }
 
 @MainActor
-private final class PreviewHomeNavigation: HomeCoordinatorNavigation {
-    func openMovieDetail(movie: MovieUIModel) {}
-    func openSeeGenre(genre: HomeGenreSectionUIModel) {}
-    func closeHomeFlow() {}
-    func goBack() {}
+private final class PreviewHomeEffectHandler: HomeEffectHandling {
+    func handle(_ effect: HomeEffect) {}
 }
