@@ -86,6 +86,18 @@ final class AppDependencyContainer {
     }
 
     @MainActor
+    func makeSearchStore(
+        effectHandler: any SearchEffectHandling
+    ) -> SearchStore {
+        SearchStore(
+            state: .initial,
+            getMoviesUseCase: makeGetMoviesUseCase(),
+            moviesMapper: HomeMoviesMapper(),
+            effectHandler: effectHandler
+        )
+    }
+
+    @MainActor
     func makeMyListStore(
         navigation: MyListNavigation
     ) -> MyListStore {

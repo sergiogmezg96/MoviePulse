@@ -31,6 +31,10 @@ struct HomeMoviesMapper {
         }
     }
 
+    func mapMovies(_ movies: [MovieDomainModel]) -> [MovieUIModel] {
+        movies.map(mapMovie)
+    }
+
     private func uniqueGenreIds(from movies: [MovieDomainModel]) -> [Int] {
         movies.reduce(into: []) { genreIds, movie in
             movie.genreIds.forEach { genreId in

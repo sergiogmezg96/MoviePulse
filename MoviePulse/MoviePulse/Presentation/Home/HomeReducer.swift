@@ -24,10 +24,35 @@ struct HomeReducer {
                     status: .loading,
                     featuredMovie: state.featuredMovie,
                     isFeaturedMovieInMyList: state.isFeaturedMovieInMyList,
+                    isSearchPresented: state.isSearchPresented,
                     genreSections: state.genreSections
                 ),
                 effect: nil,
                 command: .loadMovies
+            )
+        case .openSearch:
+            return Transition(
+                state: HomeViewState(
+                    status: state.status,
+                    featuredMovie: state.featuredMovie,
+                    isFeaturedMovieInMyList: state.isFeaturedMovieInMyList,
+                    isSearchPresented: true,
+                    genreSections: state.genreSections
+                ),
+                effect: nil,
+                command: nil
+            )
+        case .dismissSearch:
+            return Transition(
+                state: HomeViewState(
+                    status: state.status,
+                    featuredMovie: state.featuredMovie,
+                    isFeaturedMovieInMyList: state.isFeaturedMovieInMyList,
+                    isSearchPresented: false,
+                    genreSections: state.genreSections
+                ),
+                effect: nil,
+                command: nil
             )
         case .selectGenre(let genre):
             return Transition(state: state, effect: .openGenre(genre), command: nil)
@@ -48,6 +73,7 @@ struct HomeReducer {
                     status: .loaded,
                     featuredMovie: featuredMovie,
                     isFeaturedMovieInMyList: isFeaturedMovieInMyList,
+                    isSearchPresented: state.isSearchPresented,
                     genreSections: genreSections
                 ),
                 effect: nil,
@@ -59,6 +85,7 @@ struct HomeReducer {
                     status: .failed(message: message),
                     featuredMovie: nil,
                     isFeaturedMovieInMyList: false,
+                    isSearchPresented: state.isSearchPresented,
                     genreSections: []
                 ),
                 effect: nil,
@@ -70,6 +97,7 @@ struct HomeReducer {
                     status: state.status,
                     featuredMovie: state.featuredMovie,
                     isFeaturedMovieInMyList: isInMyList,
+                    isSearchPresented: state.isSearchPresented,
                     genreSections: state.genreSections
                 ),
                 effect: nil,
