@@ -8,15 +8,15 @@
 import SwiftUI
 
 public struct SearcherItemViewConfig {
-    let placeholder: String
-    let text: Binding<String>
-    let cornerRadius: CGFloat
-    let padding: CGFloat
-    let backgroundColor: Color
-    let borderColor: Color
-    let leftIcon: String?
-    let rightIcon: String?
-    let lineWidth: CGFloat
+    public let placeholder: String
+    public let text: Binding<String>
+    public let cornerRadius: CGFloat
+    public let padding: CGFloat
+    public let backgroundColor: Color
+    public let borderColor: Color
+    public let leftIcon: String?
+    public let rightIcon: String?
+    public let lineWidth: CGFloat
     
     public init(
         placeholder: String,
@@ -42,7 +42,7 @@ public struct SearcherItemViewConfig {
 }
 
 public struct SearcherItemView: View {
-    let config: SearcherItemViewConfig
+    public let config: SearcherItemViewConfig
     
     public init(config: SearcherItemViewConfig) {
         self.config = config
@@ -82,7 +82,7 @@ public struct SearcherItemView: View {
                 cornerRadius: config.cornerRadius,
                 style: .continuous
             )
-            .stroke(config.borderColor, lineWidth: 2)
+            .stroke(config.borderColor, lineWidth: config.lineWidth)
         )
     }
 }

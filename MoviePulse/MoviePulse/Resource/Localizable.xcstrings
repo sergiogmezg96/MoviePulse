@@ -642,6 +642,38 @@
         }
       }
     },
+    "search_empty_results" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No movies match your search"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay películas que coincidan con tu búsqueda"
+          }
+        }
+      }
+    },
+    "search_placeholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search movies"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar películas"
+          }
+        }
+      }
+    },
     "tab_browse" : {
       "localizations" : {
         "en" : {

@@ -19,6 +19,7 @@ public final class HomeCoordinator {
     private let delegate: HomeCoordinatorDelegate
     private let dependencyContainer: AppDependencyContainer
     private var homeStore: HomeStore?
+    private var searchStore: SearchStore?
     
     init(
         delegate: HomeCoordinatorDelegate,
@@ -49,7 +50,7 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffectHandling {
+extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffectHandling, SearchEffectHandling {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
@@ -64,6 +65,16 @@ extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffec
             openMovieDetail(movie: movie)
         case .openGenre(let genre):
             openSeeGenre(genre: genre)
+        }
+    }
+
+    func handle(_ effect: SearchEffect) {
+        switch effect {
+        case .dismiss:
+            homeStore?.process(.dismissSearch)
+        case .openMovieDetail(let movie):
+            homeStore?.process(.dismissSearch)
+            openMovieDetail(movie: movie)
         }
     }
 
@@ -88,7 +99,8 @@ extension HomeCoordinator {
     @ViewBuilder
     var mainView: some View {
         HomeView(
-            store: makeHomeStore()
+            store: makeHomeStore(),
+            searchStore: makeSearchStore()
         )
     }
 
@@ -117,6 +129,16 @@ extension HomeCoordinator {
 
         let newStore = dependencyContainer.makeHomeStore(effectHandler: self)
         homeStore = newStore
+        return newStore
+    }
+
+    private func makeSearchStore() -> SearchStore {
+        if let cached = searchStore {
+            return cached
+        }
+
+        let newStore = dependencyContainer.makeSearchStore(effectHandler: self)
+        searchStore = newStore
         return newStore
     }
 }

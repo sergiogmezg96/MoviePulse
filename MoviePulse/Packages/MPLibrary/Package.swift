@@ -17,6 +17,10 @@ let package = Package(
         .target(
             name: "MPLibrary",
             path: "Sources/MPLibrary",
+            sources: [
+                "Common",
+                "Core"
+            ],
             resources: [
                 .process("Resources")
             ]

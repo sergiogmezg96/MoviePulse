@@ -7,6 +7,8 @@
 
 enum HomeIntent {
     case viewDidAppear
+    case openSearch
+    case dismissSearch
     case selectGenre(HomeGenreSectionUIModel)
     case toggleFeaturedMovieInMyList(MovieUIModel)
     case selectMovie(MovieUIModel)
@@ -18,5 +20,4 @@ enum HomeIntent {
     case moviesFailed(message: String)
     case featuredMovieMyListUpdated(isInMyList: Bool)
     // case selectProfile
-    // case submitSearch(query: String)
 }

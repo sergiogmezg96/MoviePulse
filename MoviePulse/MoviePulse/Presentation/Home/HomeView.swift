@@ -10,17 +10,24 @@ import MPLibrary
 
 struct HomeView: View {
     let store: HomeStore
+    let searchStore: SearchStore
     
     init(
-        store: HomeStore
+        store: HomeStore,
+        searchStore: SearchStore
     ) {
         self.store = store
+        self.searchStore = searchStore
     }
     
     var body: some View {
         ScrollView {
             VStack(spacing: CustomSize.size0) {
-                HeaderSection()
+                HeaderSection(
+                    onSearchTap: {
+                        store.process(.openSearch)
+                    }
+                )
                 DiscoverSection(
                     movie: store.state.featuredMovie,
                     store: store
@@ -32,6 +39,24 @@ struct HomeView: View {
         .task {
             store.process(.viewDidAppear)
         }
+        .sheet(isPresented: searchPresentation) {
+            SearchView(store: searchStore)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+    }
+
+    private var searchPresentation: Binding<Bool> {
+        Binding(
+            get: { store.state.isSearchPresented },
+            set: { isPresented in
+                guard !isPresented else {
+                    return
+                }
+
+                store.process(.dismissSearch)
+            }
+        )
     }
 
 
@@ -246,6 +271,7 @@ private struct PageIndicator: View {
 }
 
 private struct HeaderSection: View {
+    let onSearchTap: () -> Void
     
     var body: some View {
         HStack {
@@ -260,19 +286,13 @@ private struct HeaderSection: View {
             
             Spacer()
             
-            /*
-            HStack(spacing: CustomSize.size16) {
+            Button(action: onSearchTap) {
                 Image(systemName: "magnifyingglass")
                     .font(FontSize.title2)
                     .foregroundColor(AppColor.textPrimary)
-                
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
-                    .scaledToFit()
                     .frame(width: CustomSize.size40, height: CustomSize.size40)
-                    .foregroundColor(AppColor.textSecondary)
             }
-            */
+            .buttonStyle(.plain)
         }
         .padding(.top, CustomSize.size16)
         .padding(.horizontal, CustomSize.size24)
@@ -283,7 +303,7 @@ private struct HeaderSection: View {
 #Preview {
     ScrollView {
         VStack(spacing: CustomSize.size0) {
-            HeaderSection()
+            HeaderSection(onSearchTap: {})
             DiscoverSection(
                 movie: MovieUIModel(
                     id: 1,
