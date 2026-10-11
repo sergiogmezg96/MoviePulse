@@ -56,17 +56,15 @@ final class AppDependencyContainer {
 
     // MARK: Stores
     @MainActor
-    func makeHomeStore(
-        navigation: HomeCoordinatorNavigation
-    ) -> HomeStore {
+    func makeHomeStore(effectHandler: any HomeEffectHandling) -> HomeStore {
         HomeStore(
             state: .initial,
+            effectHandler: effectHandler,
             getMoviesUseCase: makeGetMoviesUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
-            moviesMapper: HomeMoviesMapper(),
-            navigation: navigation
+            moviesMapper: HomeMoviesMapper()
         )
     }
 
