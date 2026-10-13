@@ -99,14 +99,14 @@ final class AppDependencyContainer {
 
     @MainActor
     func makeMyListStore(
-        navigation: MyListNavigation
+        effectHandler: any MyListEffectHandling
     ) -> MyListStore {
         MyListStore(
             state: .initial,
+            effectHandler: effectHandler,
             getFavoriteMoviesUseCase: makeGetFavoriteMoviesUseCase(),
             getMyListMoviesUseCase: makeGetMyListMoviesUseCase(),
-            favoritesMapper: MyListFavoritesMapper(),
-            navigation: navigation
+            favoritesMapper: MyListFavoritesMapper()
         )
     }
 
