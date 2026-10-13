@@ -46,7 +46,14 @@ public final class MyListCoordinator {
 }
 
 // MARK: - Internal navigation
-extension MyListCoordinator: MyListNavigation, MovieDetailNavigation {
+extension MyListCoordinator: MyListEffectHandling, MovieDetailNavigation {
+    func handle(_ effect: MyListEffect) {
+        switch effect {
+        case .openMovieDetail(let movie):
+            openMovieDetail(movie: movie)
+        }
+    }
+
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
@@ -89,7 +96,7 @@ extension MyListCoordinator {
             return cached
         }
 
-        let newStore = dependencyContainer.makeMyListStore(navigation: self)
+        let newStore = dependencyContainer.makeMyListStore(effectHandler: self)
         myListStore = newStore
         return newStore
     }

@@ -9,11 +9,6 @@ import Observation
 import MPLibrary
 
 @MainActor
-protocol MyListNavigation {
-    func openMovieDetail(movie: MovieUIModel)
-}
-
-@MainActor
 @Observable
 final class MyListStore {
     private(set) var state: MyListState
@@ -21,53 +16,69 @@ final class MyListStore {
     private let getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase
     private let getMyListMoviesUseCase: GetMyListMoviesUseCase
     private let favoritesMapper: MyListFavoritesMapper
-    private let navigation: MyListNavigation
-
+    private let reducer: MyListReducer
+    private weak var effectHandler: (any MyListEffectHandling)?
+    
     init(
         state: MyListState,
+        reducer: MyListReducer = MyListReducer(),
+        effectHandler: any MyListEffectHandling,
         getFavoriteMoviesUseCase: GetFavoriteMoviesUseCase,
         getMyListMoviesUseCase: GetMyListMoviesUseCase,
-        favoritesMapper: MyListFavoritesMapper,
-        navigation: MyListNavigation
+        favoritesMapper: MyListFavoritesMapper
     ) {
         self.state = state
+        self.reducer = reducer
+        self.effectHandler = effectHandler
         self.getFavoriteMoviesUseCase = getFavoriteMoviesUseCase
         self.getMyListMoviesUseCase = getMyListMoviesUseCase
         self.favoritesMapper = favoritesMapper
-        self.navigation = navigation
     }
 
     func process(_ intent: MyListIntent) {
-        switch intent {
-        case .viewDidAppear:
-            loadMovies()
-        case .selectMovie(let movie):
-            navigation.openMovieDetail(movie: movie)
+        let transition = reducer.reduce(
+            intent,
+            state
+        )
+
+        state = transition.state
+
+        if let effect = transition.effect {
+            effectHandler?.handle(effect)
+        }
+
+        if let command = transition.command {
+            execute(command)
         }
     }
 
+    private func execute(_ command: MyListCommand) {
+        switch command {
+        case .loadMovies:
+            loadMovies()
+        }
+    }
+    
     private func loadMovies() {
-        state = MyListState(
-            status: .loading,
-            favoriteMovies: state.favoriteMovies,
-            movies: state.movies
-        )
-
         Task {
             do {
-                async let favoriteMovies = getFavoriteMoviesUseCase.execute(request: ())
-                async let movies = getMyListMoviesUseCase.execute(request: ())
+                async let favoriteMoviesRequest = getFavoriteMoviesUseCase.execute(request: ())
+                async let moviesRequest = getMyListMoviesUseCase.execute(request: ())
 
-                state = MyListState(
-                    status: .loaded,
-                    favoriteMovies: favoritesMapper.map(try await favoriteMovies),
-                    movies: try await movies
+                let favoriteMovies = try await favoriteMoviesRequest
+                let movies = try await moviesRequest
+
+                process(
+                    .moviesLoaded(
+                        favoriteMovies: favoritesMapper.map(favoriteMovies),
+                        movies: movies
+                    )
                 )
             } catch {
-                state = MyListState(
-                    status: .failed(message: ApiErrorMapping.message(for: error)),
-                    favoriteMovies: [],
-                    movies: []
+                process(
+                    .moviesFailed(
+                        message: ApiErrorMapping.message(for: error)
+                    )
                 )
             }
         }

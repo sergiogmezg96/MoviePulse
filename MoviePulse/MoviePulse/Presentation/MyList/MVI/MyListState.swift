@@ -16,10 +16,12 @@ struct MyListState: Equatable {
     let status: MyListStatus
     let favoriteMovies: [MovieUIModel]
     let movies: [MovieUIModel]
-
+    let selectedFilter: MyListFilter
+    
     static let initial = MyListState(
         status: .idle,
         favoriteMovies: [],
-        movies: []
+        movies: [],
+        selectedFilter: .movies
     )
 }

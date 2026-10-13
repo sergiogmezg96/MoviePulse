@@ -9,8 +9,6 @@ import SwiftUI
 import MPLibrary
 
 struct MyListView: View {
-    @State private var selectedFilter: MyListFilter = .movies
-
     let store: MyListStore
 
     init(store: MyListStore) {
@@ -54,9 +52,9 @@ struct MyListView: View {
                     MPSelectableChip(
                         config: MPSelectableChipConfig(
                             title: filter.title,
-                            isSelected: selectedFilter == filter,
+                            isSelected: store.state.selectedFilter == filter,
                             action: {
-                                selectedFilter = filter
+                                store.process(.selectFilter(filter))
                             }
                         )
                     )
@@ -150,7 +148,7 @@ struct MyListView: View {
     }
 
     private func filteredMovies(_ movies: [MovieUIModel]) -> [MovieUIModel] {
-        switch selectedFilter {
+        switch store.state.selectedFilter {
         case .movies:
             return movies
         case .topRated:
@@ -161,27 +159,6 @@ struct MyListView: View {
             return movies.sorted { lhs, rhs in
                 lhs.releaseDate > rhs.releaseDate
             }
-        }
-    }
-}
-
-private enum MyListFilter: CaseIterable, Identifiable {
-    case movies
-    case topRated
-    case recentlyAdded
-
-    var id: Self {
-        self
-    }
-
-    var title: String {
-        switch self {
-        case .movies:
-            return "genre_filter_movies".localized
-        case .topRated:
-            return "genre_filter_top_rated".localized
-        case .recentlyAdded:
-            return "genre_filter_recently_added".localized
         }
     }
 }
