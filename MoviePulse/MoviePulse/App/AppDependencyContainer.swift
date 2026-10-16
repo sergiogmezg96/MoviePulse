@@ -42,6 +42,10 @@ final class AppDependencyContainer {
         GetFavoriteMovieByIdUseCase(repository: movieRepositoryImpl)
     }
 
+    func makeGetFavoriteMoviesUseCase() -> GetFavoriteMoviesUseCase {
+        GetFavoriteMoviesUseCase(repository: movieRepositoryImpl)
+    }
+
     func makeGetMyListMovieByIdUseCase() -> GetMyListMovieByIdUseCase {
         GetMyListMovieByIdUseCase(repository: movieRepositoryImpl)
     }
@@ -52,54 +56,90 @@ final class AppDependencyContainer {
 
     // MARK: Stores
     @MainActor
-    func makeHomeStore(
-        navigation: HomeCoordinatorNavigation
-    ) -> HomeStore {
+    func makeHomeStore(effectHandler: any HomeEffectHandling) -> HomeStore {
         HomeStore(
             state: .initial,
+            effectHandler: effectHandler,
             getMoviesUseCase: makeGetMoviesUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
-            moviesMapper: HomeMoviesMapper(),
-            navigation: navigation
+            moviesMapper: HomeMoviesMapper()
         )
     }
 
     @MainActor
     func makeMovieDetailStore(
         movie: MovieUIModel,
-        navigation: MovieDetailNavigation
+        effectHandler: any MovieDetailEffectHandling
     ) -> MovieDetailStore {
         MovieDetailStore(
             state: .initial(movie: movie),
+            effectHandler: effectHandler,
             saveFavoriteMovieUseCase: makeSaveFavoriteMovieUseCase(),
             deleteFavoriteMovieUseCase: makeDeleteFavoriteMovieUseCase(),
             getFavoriteMovieByIdUseCase: makeGetFavoriteMovieByIdUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
-            navigation: navigation
+        )
+    }
+
+    @MainActor
+    func makeSearchStore(
+        effectHandler: any SearchEffectHandling
+    ) -> SearchStore {
+        SearchStore(
+            state: .initial,
+            getMoviesUseCase: makeGetMoviesUseCase(),
+            moviesMapper: HomeMoviesMapper(),
+            effectHandler: effectHandler
         )
     }
 
     @MainActor
     func makeMyListStore(
-        navigation: MyListNavigation
+        effectHandler: any MyListEffectHandling
     ) -> MyListStore {
         MyListStore(
             state: .initial,
+            effectHandler: effectHandler,
+            getFavoriteMoviesUseCase: makeGetFavoriteMoviesUseCase(),
             getMyListMoviesUseCase: makeGetMyListMoviesUseCase(),
-            navigation: navigation
+            favoritesMapper: MyListFavoritesMapper()
         )
     }
 
+    @MainActor
+    func makeGenreStore(
+        genre: HomeGenreSectionUIModel,
+        effectHandler: any GenreEffectHandling
+    ) -> GenreStore {
+        GenreStore(
+            state: .initial(genre: genre),
+            effectHandler: effectHandler
+        )
+    }
+
+    // MARK: Coordinators
     @MainActor
     func makeHomeCoordinator(
         delegate: HomeCoordinatorDelegate,
         navigationPath: Binding<[AnyHashable]>
     ) -> HomeCoordinator {
         HomeCoordinator(
+            delegate: delegate,
+            navigationPath: navigationPath,
+            dependencyContainer: self
+        )
+    }
+
+    @MainActor
+    func makeMyListCoordinator(
+        delegate: MyListCoordinatorDelegate,
+        navigationPath: Binding<[AnyHashable]>
+    ) -> MyListCoordinator {
+        MyListCoordinator(
             delegate: delegate,
             navigationPath: navigationPath,
             dependencyContainer: self

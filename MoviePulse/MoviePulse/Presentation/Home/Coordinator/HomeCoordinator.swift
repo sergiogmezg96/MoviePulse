@@ -14,19 +14,12 @@ public protocol HomeCoordinatorDelegate {
 }
 
 @MainActor
-protocol HomeCoordinatorNavigation {
-    func openMovieDetail(movie: MovieUIModel)
-    func openSeeGenre(genre: HomeGenreSectionUIModel)
-    func closeHomeFlow()
-    func goBack()
-}
-
-@MainActor
 public final class HomeCoordinator {
     @Binding private var navigationPath: [AnyHashable]
     private let delegate: HomeCoordinatorDelegate
     private let dependencyContainer: AppDependencyContainer
     private var homeStore: HomeStore?
+    private var searchStore: SearchStore?
     
     init(
         delegate: HomeCoordinatorDelegate,
@@ -57,13 +50,48 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: HomeCoordinatorNavigation, GenreViewNavigation, MovieDetailNavigation, MyListNavigation {
+extension HomeCoordinator: GenreEffectHandling, MovieDetailEffectHandling, HomeEffectHandling, SearchEffectHandling {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
     
     func openSeeGenre(genre: HomeGenreSectionUIModel) {
         navigationPath.append(Path.genre(genre))
+    }
+
+    func handle(_ effect: MovieDetailEffect) {
+        switch effect {
+        case .goBack:
+            goBack()
+        }
+    }
+    
+    func handle(_ effect: HomeEffect) {
+        switch effect {
+        case .openMovieDetail(let movie):
+            openMovieDetail(movie: movie)
+        case .openGenre(let genre):
+            openSeeGenre(genre: genre)
+        }
+    }
+
+    func handle(_ effect: SearchEffect) {
+        switch effect {
+        case .dismiss:
+            homeStore?.process(.dismissSearch)
+        case .openMovieDetail(let movie):
+            homeStore?.process(.dismissSearch)
+            openMovieDetail(movie: movie)
+        }
+    }
+
+    func handle(_ effect: GenreEffect) {
+        switch effect {
+        case .openMovieDetail(let movie):
+            openMovieDetail(movie: movie)
+        case .goBack:
+            goBack()
+        }
     }
 
     func closeHomeFlow() {
@@ -87,7 +115,8 @@ extension HomeCoordinator {
     @ViewBuilder
     var mainView: some View {
         HomeView(
-            store: makeHomeStore()
+            store: makeHomeStore(),
+            searchStore: makeSearchStore()
         )
     }
 
@@ -96,17 +125,17 @@ extension HomeCoordinator {
         MovieDetailView(
             store: dependencyContainer.makeMovieDetailStore(
                 movie: movie,
-                navigation: self
+                effectHandler: self
             )
         )
     }
 
     @ViewBuilder
     func genreView(genre: HomeGenreSectionUIModel) -> some View {
-        GenreView(
+        GenreView(store: dependencyContainer.makeGenreStore(
             genre: genre,
-            navigation: self
-        )
+            effectHandler: self
+        ))
     }
 
     private func makeHomeStore() -> HomeStore {
@@ -114,8 +143,18 @@ extension HomeCoordinator {
             return cached
         }
 
-        let newStore = dependencyContainer.makeHomeStore(navigation: self)
+        let newStore = dependencyContainer.makeHomeStore(effectHandler: self)
         homeStore = newStore
+        return newStore
+    }
+
+    private func makeSearchStore() -> SearchStore {
+        if let cached = searchStore {
+            return cached
+        }
+
+        let newStore = dependencyContainer.makeSearchStore(effectHandler: self)
+        searchStore = newStore
         return newStore
     }
 }
