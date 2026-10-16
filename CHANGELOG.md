@@ -4,6 +4,30 @@ Todos los cambios relevantes de MoviePulse se documentaran en este archivo.
 
 El formato sigue una estructura sencilla basada en versiones y fechas para mantener trazabilidad durante el desarrollo del proyecto.
 
+## [1.0.2] - 2026-10-16
+
+### Added
+
+- Buscador de peliculas en Home con interfaz, estados MVI y filtrado por titulo sobre el contenido cargado.
+- Componente reutilizable `SearcherItemView` en MPLibrary para desacoplar la UI de busqueda de las features.
+- Navegacion centralizada mediante `AppCoordinator`, separando el enrutado de la vista raiz de la aplicacion.
+- Coordinador especifico para Mi lista, con navegacion al detalle desde sus resultados.
+- Arquitectura MVI completa para Generos, Detalle de pelicula y Mi lista: intents, estados, efectos, comandos y reducers.
+- Filtros para Mi lista y mapper dedicado para transformar favoritos en el modelo de presentacion.
+- Constantes de aplicacion centralizadas y reubicacion de la configuracion comun fuera de la capa App.
+- Nuevas cadenas localizadas para el buscador y los flujos actualizados.
+
+### Changed
+
+- Refactorizacion de Home a una estructura MVI mas explicita, con reducer, efectos y comandos que separan la reduccion de estado de las acciones con efectos secundarios.
+- Reorganizacion de las vistas, estados, intents y mappers de Home, Generos, Detalle y Mi lista en carpetas por responsabilidad (`MVI`, `View`, `Mapper`, `Storage` y `Coordinator`).
+- Actualizacion de los stores de Home, Detalle y Mi lista para delegar las transiciones de estado en sus reducers y mantener las vistas declarativas.
+- Simplificacion de la composicion de la tab bar y de la vista raiz, delegando la navegacion de aplicacion en el coordinador correspondiente.
+- Mejora del componente de listado de generos de MPLibrary para alinearlo con el nuevo flujo de presentacion.
+- Actualizacion de la dependencia de MPLibrary necesaria para los componentes de busqueda reutilizables.
+
+---
+
 ## [1.0.1] - 2026-10-05
 
 ### Added
