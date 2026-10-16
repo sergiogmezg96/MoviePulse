@@ -71,17 +71,17 @@ final class AppDependencyContainer {
     @MainActor
     func makeMovieDetailStore(
         movie: MovieUIModel,
-        navigation: MovieDetailNavigation
+        effectHandler: any MovieDetailEffectHandling
     ) -> MovieDetailStore {
         MovieDetailStore(
             state: .initial(movie: movie),
+            effectHandler: effectHandler,
             saveFavoriteMovieUseCase: makeSaveFavoriteMovieUseCase(),
             deleteFavoriteMovieUseCase: makeDeleteFavoriteMovieUseCase(),
             getFavoriteMovieByIdUseCase: makeGetFavoriteMovieByIdUseCase(),
             saveMovieToMyListUseCase: makeSaveMovieToMyListUseCase(),
             deleteMovieFromMyListUseCase: makeDeleteMovieFromMyListUseCase(),
             getMyListMovieByIdUseCase: makeGetMyListMovieByIdUseCase(),
-            navigation: navigation
         )
     }
 
@@ -107,6 +107,17 @@ final class AppDependencyContainer {
             getFavoriteMoviesUseCase: makeGetFavoriteMoviesUseCase(),
             getMyListMoviesUseCase: makeGetMyListMoviesUseCase(),
             favoritesMapper: MyListFavoritesMapper()
+        )
+    }
+
+    @MainActor
+    func makeGenreStore(
+        genre: HomeGenreSectionUIModel,
+        effectHandler: any GenreEffectHandling
+    ) -> GenreStore {
+        GenreStore(
+            state: .initial(genre: genre),
+            effectHandler: effectHandler
         )
     }
 

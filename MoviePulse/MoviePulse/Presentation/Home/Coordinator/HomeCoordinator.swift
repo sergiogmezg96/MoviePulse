@@ -50,7 +50,7 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffectHandling, SearchEffectHandling {
+extension HomeCoordinator: GenreEffectHandling, MovieDetailEffectHandling, HomeEffectHandling, SearchEffectHandling {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
@@ -59,6 +59,13 @@ extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffec
         navigationPath.append(Path.genre(genre))
     }
 
+    func handle(_ effect: MovieDetailEffect) {
+        switch effect {
+        case .goBack:
+            goBack()
+        }
+    }
+    
     func handle(_ effect: HomeEffect) {
         switch effect {
         case .openMovieDetail(let movie):
@@ -75,6 +82,15 @@ extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffec
         case .openMovieDetail(let movie):
             homeStore?.process(.dismissSearch)
             openMovieDetail(movie: movie)
+        }
+    }
+
+    func handle(_ effect: GenreEffect) {
+        switch effect {
+        case .openMovieDetail(let movie):
+            openMovieDetail(movie: movie)
+        case .goBack:
+            goBack()
         }
     }
 
@@ -109,17 +125,17 @@ extension HomeCoordinator {
         MovieDetailView(
             store: dependencyContainer.makeMovieDetailStore(
                 movie: movie,
-                navigation: self
+                effectHandler: self
             )
         )
     }
 
     @ViewBuilder
     func genreView(genre: HomeGenreSectionUIModel) -> some View {
-        GenreView(
+        GenreView(store: dependencyContainer.makeGenreStore(
             genre: genre,
-            navigation: self
-        )
+            effectHandler: self
+        ))
     }
 
     private func makeHomeStore() -> HomeStore {
