@@ -50,7 +50,7 @@ public final class HomeCoordinator {
 }
 
 // MARK: - Internal navigation
-extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffectHandling, SearchEffectHandling {
+extension HomeCoordinator: GenreViewNavigation, MovieDetailEffectHandling, HomeEffectHandling, SearchEffectHandling {
     func openMovieDetail(movie: MovieUIModel) {
         navigationPath.append(Path.movieDetail(movie))
     }
@@ -59,6 +59,13 @@ extension HomeCoordinator: GenreViewNavigation, MovieDetailNavigation, HomeEffec
         navigationPath.append(Path.genre(genre))
     }
 
+    func handle(_ effect: MovieDetailEffect) {
+        switch effect {
+        case .goBack:
+            goBack()
+        }
+    }
+    
     func handle(_ effect: HomeEffect) {
         switch effect {
         case .openMovieDetail(let movie):
@@ -109,7 +116,7 @@ extension HomeCoordinator {
         MovieDetailView(
             store: dependencyContainer.makeMovieDetailStore(
                 movie: movie,
-                navigation: self
+                effectHandler: self
             )
         )
     }

@@ -17,12 +17,14 @@ struct MovieDetailState: Equatable {
     let movie: MovieUIModel?
     let isFavorite: Bool
     let isInMyList: Bool
+    let operationErrorMessage: String?
 
     static let initial = MovieDetailState(
         status: .idle,
         movie: nil,
         isFavorite: false,
-        isInMyList: false
+        isInMyList: false,
+        operationErrorMessage: nil
     )
 
     static func initial(movie: MovieUIModel) -> MovieDetailState {
@@ -30,7 +32,8 @@ struct MovieDetailState: Equatable {
             status: .idle,
             movie: movie,
             isFavorite: false,
-            isInMyList: false
+            isInMyList: false,
+            operationErrorMessage: nil
         )
     }
 }

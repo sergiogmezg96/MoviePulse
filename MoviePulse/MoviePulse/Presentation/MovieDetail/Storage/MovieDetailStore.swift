@@ -7,164 +7,124 @@
 
 import Foundation
 import Observation
-
-@MainActor
-protocol MovieDetailNavigation {
-    func goBack()
-}
+import MPLibrary
 
 @MainActor
 @Observable
 final class MovieDetailStore {
     private(set) var state: MovieDetailState
-    
+
+    private let reducer: MovieDetailReducer
+    private weak var effectHandler: (any MovieDetailEffectHandling)?
     private let saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase
     private let deleteFavoriteMovieUseCase: DeleteFavoriteMovieUseCase
     private let getFavoriteMovieByIdUseCase: GetFavoriteMovieByIdUseCase
     private let saveMovieToMyListUseCase: SaveMovieToMyListUseCase
     private let deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase
     private let getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase
-    private let navigation: MovieDetailNavigation
-    
+
     init(
         state: MovieDetailState,
+        reducer: MovieDetailReducer = MovieDetailReducer(),
+        effectHandler: any MovieDetailEffectHandling,
         saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase,
         deleteFavoriteMovieUseCase: DeleteFavoriteMovieUseCase,
         getFavoriteMovieByIdUseCase: GetFavoriteMovieByIdUseCase,
         saveMovieToMyListUseCase: SaveMovieToMyListUseCase,
         deleteMovieFromMyListUseCase: DeleteMovieFromMyListUseCase,
-        getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase,
-        navigation: MovieDetailNavigation
+        getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase
     ) {
         self.state = state
+        self.reducer = reducer
+        self.effectHandler = effectHandler
         self.saveFavoriteMovieUseCase = saveFavoriteMovieUseCase
         self.deleteFavoriteMovieUseCase = deleteFavoriteMovieUseCase
         self.getFavoriteMovieByIdUseCase = getFavoriteMovieByIdUseCase
         self.saveMovieToMyListUseCase = saveMovieToMyListUseCase
         self.deleteMovieFromMyListUseCase = deleteMovieFromMyListUseCase
         self.getMyListMovieByIdUseCase = getMyListMovieByIdUseCase
-        self.navigation = navigation
     }
-    
+
     func process(_ intent: MovieDetailIntent) {
-        switch intent {
-        case .viewDidAppear:
-            loadView()
-        // case .rateMovie:
-        //     break
-        case .toggleFavorite:
-            toggleFavorite()
-        case .toggleMyList:
-            toggleMyList()
-        case .goBack:
-            navigation.goBack()
+        let transition = reducer.reduce(state: state, intent: intent)
+        state = transition.state
+
+        if let effect = transition.effect {
+            effectHandler?.handle(effect)
+        }
+
+        if let command = transition.command {
+            execute(command)
         }
     }
-    
-    private func loadView() {
-        guard state.status != .loading, state.status != .loaded else {
-            return
+
+    private func execute(_ command: MovieDetailCommand) {
+        switch command {
+        case .loadMovieStatus(let movie):
+            loadMovieStatus(movie)
+        case .updateFavorite(let movie, let isCurrentlyFavorite):
+            updateFavorite(movie, isCurrentlyFavorite: isCurrentlyFavorite)
+        case .updateMyList(let movie, let isCurrentlyInMyList):
+            updateMyList(movie, isCurrentlyInMyList: isCurrentlyInMyList)
         }
+    }
 
-        state = MovieDetailState(
-            status: .loading,
-            movie: state.movie,
-            isFavorite: state.isFavorite,
-            isInMyList: state.isInMyList
-        )
-
-        guard let movie = state.movie else {
-            state = MovieDetailState(
-                status: .failed(message: "No se ha podido cargar la pelicula."),
-                movie: nil,
-                isFavorite: false,
-                isInMyList: false
-            )
-            return
-        }
-
+    private func loadMovieStatus(_ movie: MovieUIModel) {
         Task {
-            let favoriteMovie = try? await getFavoriteMovieByIdUseCase.execute(request: movie.id)
-            let myListMovie = try? await getMyListMovieByIdUseCase.execute(request: movie.id)
+            do {
+                async let favoriteMovie = getFavoriteMovieByIdUseCase.execute(request: movie.id)
+                async let myListMovie = getMyListMovieByIdUseCase.execute(request: movie.id)
 
-            state = MovieDetailState(
-                status: .loaded,
-                movie: movie,
-                isFavorite: favoriteMovie != nil,
-                isInMyList: myListMovie != nil
-            )
+                let favorite = try await favoriteMovie
+                let myList = try await myListMovie
+
+                process(
+                    .movieStatusLoaded(
+                        isFavorite: favorite != nil,
+                        isInMyList: myList != nil
+                    )
+                )
+            } catch {
+                process(.movieStatusFailed(message: ApiErrorMapping.message(for: error)))
+            }
         }
     }
-    
-    private func toggleFavorite() {
-        guard let movie = state.movie else {
-            return
-        }
 
-        state.isFavorite ? deleteFavoriteMovie(movie) : saveFavoriteMovie(movie)
-    }
-
-    private func toggleMyList() {
-        guard let movie = state.movie else {
-            return
-        }
-
-        state.isInMyList ? deleteMovieFromMyList(movie) : saveMovieToMyList(movie)
-    }
-
-    private func saveFavoriteMovie(_ movie: MovieUIModel) {
+    private func updateFavorite(
+        _ movie: MovieUIModel,
+        isCurrentlyFavorite: Bool
+    ) {
         Task {
-            try? await saveFavoriteMovieUseCase.execute(
-                request: mapFavoriteMovie(movie)
-            )
+            do {
+                if isCurrentlyFavorite {
+                    try await deleteFavoriteMovieUseCase.execute(request: movie.id)
+                } else {
+                    try await saveFavoriteMovieUseCase.execute(request: mapFavoriteMovie(movie))
+                }
 
-            state = MovieDetailState(
-                status: state.status,
-                movie: state.movie,
-                isFavorite: true,
-                isInMyList: state.isInMyList
-            )
+                process(.favoriteUpdated(isFavorite: !isCurrentlyFavorite))
+            } catch {
+                process(.operationFailed(message: ApiErrorMapping.message(for: error)))
+            }
         }
     }
 
-    private func deleteFavoriteMovie(_ movie: MovieUIModel) {
+    private func updateMyList(
+        _ movie: MovieUIModel,
+        isCurrentlyInMyList: Bool
+    ) {
         Task {
-            try? await deleteFavoriteMovieUseCase.execute(request: movie.id)
+            do {
+                if isCurrentlyInMyList {
+                    try await deleteMovieFromMyListUseCase.execute(request: movie.id)
+                } else {
+                    try await saveMovieToMyListUseCase.execute(request: movie)
+                }
 
-            state = MovieDetailState(
-                status: state.status,
-                movie: state.movie,
-                isFavorite: false,
-                isInMyList: state.isInMyList
-            )
-        }
-    }
-
-    private func saveMovieToMyList(_ movie: MovieUIModel) {
-        Task {
-            try? await saveMovieToMyListUseCase.execute(
-                request: movie
-            )
-
-            state = MovieDetailState(
-                status: state.status,
-                movie: state.movie,
-                isFavorite: state.isFavorite,
-                isInMyList: true
-            )
-        }
-    }
-
-    private func deleteMovieFromMyList(_ movie: MovieUIModel) {
-        Task {
-            try? await deleteMovieFromMyListUseCase.execute(request: movie.id)
-
-            state = MovieDetailState(
-                status: state.status,
-                movie: state.movie,
-                isFavorite: state.isFavorite,
-                isInMyList: false
-            )
+                process(.myListUpdated(isInMyList: !isCurrentlyInMyList))
+            } catch {
+                process(.operationFailed(message: ApiErrorMapping.message(for: error)))
+            }
         }
     }
 

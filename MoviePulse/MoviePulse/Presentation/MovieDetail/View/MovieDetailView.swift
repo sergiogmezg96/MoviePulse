@@ -10,13 +10,13 @@ import MPLibrary
 
 struct MovieDetailView: View {
     let store: MovieDetailStore
-
+    
     init(
         store: MovieDetailStore
     ) {
         self.store = store
     }
-
+    
     var body: some View {
         ZStack(alignment: .top) {
             AppColor.background.opacity(0.95).ignoresSafeArea()
@@ -26,8 +26,8 @@ struct MovieDetailView: View {
                     imageURL: store.state.movie?.backdropURL
                 )
             )
-                .ignoresSafeArea(edges: .top)
-                .zIndex(0)
+            .ignoresSafeArea(edges: .top)
+            .zIndex(0)
             
             VStack(spacing: CustomSize.size24) {
                 MPNavigationHeaderBar(
@@ -51,8 +51,18 @@ struct MovieDetailView: View {
         .task {
             store.process(.viewDidAppear)
         }
+        .alert(
+            "api_error_unknown".localized,
+            isPresented: operationErrorPresentation
+        ) {
+            Button("OK") {
+                store.process(.dismissOperationError)
+            }
+        } message: {
+            Text(store.state.operationErrorMessage ?? "")
+        }
     }
-
+    
     @ViewBuilder
     private var content: some View {
         switch store.state.status {
@@ -61,8 +71,8 @@ struct MovieDetailView: View {
                 .padding(.top, CustomSize.size24)
         case .loaded:
             MovieInfoSection(store: store)
-            .zIndex(1)
-
+                .zIndex(1)
+            
             MovieOverviewSection(movie: store.state.movie)
                 .zIndex(1)
         case .failed(let message):
@@ -73,11 +83,24 @@ struct MovieDetailView: View {
                 .padding(.horizontal, CustomSize.size24)
         }
     }
+    
+    private var operationErrorPresentation: Binding<Bool> {
+        Binding(
+            get: { store.state.operationErrorMessage != nil },
+            set: { isPresented in
+                guard !isPresented else {
+                    return
+                }
+                
+                store.process(.dismissOperationError)
+            }
+        )
+    }
 }
 
 private  struct MovieInfoSection: View {
     let store: MovieDetailStore
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: CustomSize.size16) {
             HStack(alignment: .bottom) {
@@ -99,21 +122,21 @@ private  struct MovieInfoSection: View {
                     
                     HStack(spacing: CustomSize.size16) {
                         /*
-                        MPButton(
-                            config: MPButtonConfig(
-                                style: .primary,
-                                cornerRadius: CustomSize.size10,
-                                horizontalPadding: CustomSize.size16,
-                                verticalPadding: CustomSize.size10,
-                                font: FontSize.captionBold,
-                                iconName: "star.fill",
-                                text: "movie_detail_rate".localized,
-                                action: {
-                                    store.process(.rateMovie)
-                                }
-                            )
-                        )
-                        */
+                         MPButton(
+                         config: MPButtonConfig(
+                         style: .primary,
+                         cornerRadius: CustomSize.size10,
+                         horizontalPadding: CustomSize.size16,
+                         verticalPadding: CustomSize.size10,
+                         font: FontSize.captionBold,
+                         iconName: "star.fill",
+                         text: "movie_detail_rate".localized,
+                         action: {
+                         store.process(.rateMovie)
+                         }
+                         )
+                         )
+                         */
                         
                         MPButton(
                             config: MPButtonConfig(
@@ -184,29 +207,29 @@ private struct RatingView: View {
         }
         .padding(.vertical, CustomSize.size8)
     }
-
+    
     private var starsRating: Double {
         rating / 2
     }
-
+    
     private func starImage(for index: Int) -> Image {
         let starValue = Double(index) + 1
-
+        
         if starsRating >= starValue {
             return Image(systemName: "star.fill")
         }
-
+        
         if starsRating >= starValue - 0.5 {
             return Image(systemName: "star.leadinghalf.filled")
         }
-
+        
         return Image(systemName: "star")
     }
 }
 
 private struct PosterImage: View {
     let imageURL: URL?
-
+    
     var body: some View {
         MPRemoteImage(
             config: MPRemoteImageConfig(
@@ -231,6 +254,7 @@ private struct PosterImage: View {
                     backdropURL: nil,
                 )
             ),
+            effectHandler: PreviewMovieDetailEffectHandler(),
             saveFavoriteMovieUseCase: SaveFavoriteMovieUseCase(
                 repository: MovieRepositoryImpl(apiKey: "")
             ),
@@ -248,13 +272,12 @@ private struct PosterImage: View {
             ),
             getMyListMovieByIdUseCase: GetMyListMovieByIdUseCase(
                 repository: MovieRepositoryImpl(apiKey: "")
-            ),
-            navigation: PreviewMovieDetailNavigation()
+            )
         )
     )
 }
 
 @MainActor
-private final class PreviewMovieDetailNavigation: MovieDetailNavigation {
-    func goBack() {}
+private final class PreviewMovieDetailEffectHandler: MovieDetailEffectHandling {
+    func handle(_ effect: MovieDetailEffect) {}
 }
