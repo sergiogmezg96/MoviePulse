@@ -110,6 +110,17 @@ final class AppDependencyContainer {
         )
     }
 
+    @MainActor
+    func makeGenreStore(
+        genre: HomeGenreSectionUIModel,
+        effectHandler: any GenreEffectHandling
+    ) -> GenreStore {
+        GenreStore(
+            state: .initial(genre: genre),
+            effectHandler: effectHandler
+        )
+    }
+
     // MARK: Coordinators
     @MainActor
     func makeHomeCoordinator(
