@@ -4,6 +4,22 @@ Todos los cambios relevantes de MoviePulse se documentaran en este archivo.
 
 El formato sigue una estructura sencilla basada en versiones y fechas para mantener trazabilidad durante el desarrollo del proyecto.
 
+## [Unreleased]
+
+### Added
+
+- Pruebas unitarias para los casos de uso de favoritos y Mi lista mediante un repositorio espia.
+- Pruebas de `MovieRepositoryImpl` para persistencia local, colecciones vacias, consultas por identificador, duplicados, borrados y datos almacenados invalidos.
+- Fixtures reutilizables de peliculas y un spy de repositorio para aislar las pruebas de Domain y Data.
+- Configuracion del esquema de Xcode para incluir el target de pruebas de MoviePulse.
+
+### Changed
+
+- README actualizado con las funcionalidades implementadas, la composicion de dependencias, la navegacion basada en coordinadores y el flujo MVI actual.
+- Documentacion de configuracion de TMDb, persistencia local, cobertura de pruebas y siguientes evoluciones del proyecto.
+
+---
+
 ## [1.0.2] - 2026-10-16
 
 ### Added
