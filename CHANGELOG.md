@@ -4,7 +4,7 @@ Todos los cambios relevantes de MoviePulse se documentaran en este archivo.
 
 El formato sigue una estructura sencilla basada en versiones y fechas para mantener trazabilidad durante el desarrollo del proyecto.
 
-## [Unreleased]
+## [1.0.3] - 2026-10-19
 
 ### Added
 
